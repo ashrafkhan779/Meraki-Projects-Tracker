@@ -39,6 +39,7 @@ html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body)
 h1,h2,h3,h4{font-family:var(--head);margin:0;letter-spacing:-.01em}
 button,select,input{font:inherit;color:inherit}
 :focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+#view:focus,#view:focus-visible{outline:none}
 .num{font-family:var(--head);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
 .app{display:grid;grid-template-columns:236px minmax(0,1fr);min-height:100vh}
 /* Sidebar */
@@ -67,8 +68,39 @@ button,select,input{font:inherit;color:inherit}
 .fsel{display:flex;flex-direction:column;gap:2px}
 .fsel label{font-size:11px;color:var(--muted);font-weight:500;padding-left:2px}
 select,.search input{height:34px;border:1px solid var(--rule);background:var(--surface);border-radius:7px;padding:0 28px 0 10px;min-width:118px;max-width:190px;cursor:pointer;-webkit-appearance:none;appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);background-position:calc(100% - 15px) 15px,calc(100% - 10px) 15px;background-size:5px 5px;background-repeat:no-repeat}
-select.on{border-color:var(--ink);font-weight:600}
+.ms{position:relative;display:flex;flex-direction:column;gap:2px}
+.ms-lbl{font-size:11px;color:var(--muted);font-weight:500;padding-left:2px}
+.ms-btn{height:34px;border:1px solid var(--rule);background:var(--surface);border-radius:7px;padding:0 30px 0 10px;min-width:128px;max-width:200px;cursor:pointer;display:flex;align-items:center;gap:6px;text-align:left;position:relative;white-space:nowrap}
+.ms-btn::after{content:"";position:absolute;right:11px;top:13px;width:6px;height:6px;border-right:1.6px solid var(--muted);border-bottom:1.6px solid var(--muted);transform:rotate(45deg);transition:transform .15s}
+.ms-btn[aria-expanded="true"]::after{transform:translateY(3px) rotate(-135deg)}
+.ms-btn:hover{border-color:var(--muted)}
+.ms-btn.on{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink);font-weight:600}
+.ms-val{overflow:hidden;text-overflow:ellipsis;min-width:0}
+.ms-n{font-size:11px;font-weight:700;background:var(--brand);color:#fff;border-radius:9px;padding:0 6px;margin-left:auto;line-height:17px;flex:none}
+.ms-pop{position:absolute;top:calc(100% + 6px);left:0;z-index:35;width:300px;max-width:calc(100vw - 24px);background:var(--surface);border:1px solid var(--rule);border-radius:10px;box-shadow:0 14px 40px -10px rgba(10,12,15,.35);display:flex;flex-direction:column;overflow:hidden}
+.ms-pop[hidden]{display:none}
+.ms-pop.right{left:auto;right:0}
+.ms-head{padding:10px 10px 6px;display:grid;gap:8px;border-bottom:1px solid var(--rule)}
+.ms-search{height:32px;border:1px solid var(--rule);border-radius:7px;padding:0 10px;background:var(--bg);width:100%}
+.ms-acts{display:flex;gap:6px;flex-wrap:wrap}
+.ms-acts button{border:1px solid var(--rule);background:var(--surface);border-radius:6px;padding:3px 9px;font-size:12px;cursor:pointer;font-weight:500}
+.ms-acts button:hover{border-color:var(--muted)}
+.ms-list{max-height:300px;overflow-y:auto;padding:4px 0;overscroll-behavior:contain}
+.ms-opt{display:grid;grid-template-columns:18px minmax(0,1fr) auto auto;gap:8px;align-items:center;padding:6px 12px;cursor:pointer;font-size:13px;min-height:36px}
+.ms-opt:hover,.ms-opt:focus-within{background:var(--raised)}
+.ms-opt input{width:16px;height:16px;margin:0;accent-color:var(--ink);cursor:pointer}
+.ms-opt .t{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ms-opt .c{font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.ms-opt .only{border:0;background:none;color:var(--brand-ink);font-size:11.5px;font-weight:600;cursor:pointer;padding:2px 4px;border-radius:4px;opacity:0}
+.ms-opt:hover .only,.ms-opt:focus-within .only{opacity:1}
+.ms-opt.zero .t,.ms-opt.zero .c{color:var(--faint)}
+.ms-sep{font-size:11px;color:var(--faint);padding:8px 12px 2px;border-top:1px dashed var(--rule);margin-top:4px}
+.ms-empty{padding:16px 12px;color:var(--muted);font-size:13px}
+.ms-foot{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 10px;border-top:1px solid var(--rule);font-size:12px;color:var(--muted);background:var(--raised)}
+.ms-foot .btn{height:30px}
+@media (hover:none){.ms-opt .only{opacity:1}}
 .search{position:relative;align-self:flex-end}
+.chip b{font-weight:600}.chip .cv{max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .search input{background-image:none;padding:0 10px 0 32px;min-width:250px;cursor:text}
 .search svg{position:absolute;left:10px;top:9px;width:16px;height:16px;stroke:var(--muted);fill:none;stroke-width:1.8}
 .btn{height:34px;border:1px solid var(--rule);background:var(--surface);border-radius:7px;padding:0 12px;cursor:pointer;display:inline-flex;align-items:center;gap:7px;font-weight:500;white-space:nowrap}
@@ -250,10 +282,10 @@ details.data table{margin-top:8px}
   .side{position:static;height:auto;flex-direction:row;align-items:center;padding:10px 12px;gap:10px;border-right:0;border-bottom:1px solid var(--rule);overflow-x:auto}
   .brand{padding:0}.brand div{display:none}.side-foot{display:none}
   .nav{flex-direction:row}.nav button{white-space:nowrap}.nav button span.t{display:none}.nav button[aria-current="page"] span.t{display:inline}.nav button[aria-current="page"]::before{display:none}
-  .hero{grid-template-columns:1fr}.top{padding:12px 16px;position:static}.content{padding:16px}
+  .hero{grid-template-columns:1fr}.top{padding:12px 16px;position:relative;z-index:30}.content{padding:16px}
   .g-row,.g-head{grid-template-columns:200px 1fr}}
 @media (max-width:600px){.kpis{grid-template-columns:repeat(2,1fr)}.kpi{border-right:1px solid var(--rule)!important;border-bottom:1px solid var(--rule)}.kpi:nth-child(2n){border-right:0!important}
-  .span-3{grid-column:span 12}.fsel{flex:1 1 45%}select{max-width:none;width:100%}.search{flex:1 1 100%;width:100%}.search input{width:100%;min-width:0}
+  .span-3{grid-column:span 12}.fsel,.ms{flex:1 1 45%;min-width:0}.ms-btn{max-width:none;width:100%;min-width:0}select{max-width:none;width:100%}.search{flex:1 1 100%;width:100%}.search input{width:100%;min-width:0}
   .f-row{grid-template-columns:100px 1fr 80px}.wi-row{grid-template-columns:110px 1fr 46px}.facts{grid-template-columns:1fr}
   .hero{padding:22px 20px}.kpi .val{font-size:22px}}
 @media print{.side,.top .filters,.top .btn{display:none}.app{display:block}}
@@ -276,6 +308,7 @@ details.data table{margin-top:8px}
       </div>
       <div class="filters" id="filters"></div>
       <div class="chips" id="chips"></div>
+      <div class="scope-note" id="scope" aria-live="polite"></div>
     </header>
     <main class="content" id="view" tabindex="-1"></main>
   </div>
@@ -369,40 +402,141 @@ const CONF_CLS = {high:'p-high',med:'p-med',risk:'p-risk',paid:'p-paid'};
 /* ============================================================
    STATE, FILTERS
    ============================================================ */
-const F = {yr:'all',grp:'all',co:'all',cl:'all',pe:'all',st:'all',q:''};
+/* Each multi-select filter holds a Set of selected values. An empty Set means "All". */
+const F = {yr:new Set(),grp:new Set(),cl:new Set(),co:new Set(),pe:new Set(),st:new Set(),q:''};
 const FILTER_DEFS = [
-  {k:'yr',label:'Tracker year',opts:()=>[...new Set(P.map(p=>p.yr))].sort((a,b)=>b-a).map(String)},
-  {k:'grp',label:'Business line',opts:()=>GROUPS,fmt:g=>GROUP_LABEL[g]},
-  {k:'cl',label:'End client',opts:()=>Object.entries(groupBy(P,'cl')).sort((a,b)=>sum(b[1],x=>x.v)-sum(a[1],x=>x.v)).map(e=>e[0])},
-  {k:'co',label:'Principal / brand',opts:()=>Object.entries(groupBy(P,'co')).sort((a,b)=>b[1].length-a[1].length).map(e=>e[0])},
-  {k:'pe',label:'Project engineer',opts:()=>Object.keys(groupBy(P.filter(p=>p.pe),'pe')).sort()},
-  {k:'st',label:'Project status',opts:()=>STAGES,fmt:s=>STAGE_LABEL[s]},
+  {k:'yr',label:'Tracker year',get:p=>String(p.yr),opts:()=>[...new Set(P.map(p=>String(p.yr)))].sort((a,b)=>b-a)},
+  {k:'grp',label:'Business line',get:p=>p.grp,opts:()=>GROUPS.filter(g=>P.some(p=>p.grp===g)),fmt:g=>GROUP_LABEL[g]||g},
+  {k:'cl',label:'End client',get:p=>p.cl,opts:()=>Object.entries(groupBy(P,'cl')).sort((a,b)=>sum(b[1],x=>x.v)-sum(a[1],x=>x.v)).map(e=>e[0])},
+  {k:'co',label:'Principal / brand',get:p=>p.co,opts:()=>Object.entries(groupBy(P,'co')).sort((a,b)=>sum(b[1],x=>x.v)-sum(a[1],x=>x.v)).map(e=>e[0])},
+  {k:'pe',label:'Project engineer',get:p=>p.pe,opts:()=>Object.keys(groupBy(P.filter(p=>p.pe),'pe')).sort(),fmt:s=>titleCase(s)},
+  {k:'st',label:'Project status',get:p=>p.st,opts:()=>STAGES.filter(s=>P.some(p=>p.st===s)),fmt:s=>STAGE_LABEL[s]||s},
 ];
-const passP = (p, skip) => (skip==='yr'||F.yr==='all'||String(p.yr)===F.yr) && (F.grp==='all'||p.grp===F.grp) && (F.co==='all'||p.co===F.co)
-  && (F.cl==='all'||p.cl===F.cl) && (F.pe==='all'||p.pe===F.pe) && (F.st==='all'||p.st===F.st) && (!F.q||p.search.includes(F.q));
+const DEF = Object.fromEntries(FILTER_DEFS.map(d=>[d.k,d]));
+const fmtOpt = (k,v) => DEF[k].fmt ? DEF[k].fmt(v) : (v || '(blank)');
+const keep = (k,val) => !F[k].size || F[k].has(val);
+/* skip: a filter key (or array of keys) to ignore, used for "all years" charts and for option counts */
+const passP = (p, skip) => { const sk = Array.isArray(skip)?skip:[skip];
+  return FILTER_DEFS.every(d => sk.includes(d.k) || keep(d.k, d.get(p))) && (!F.q || p.search.includes(F.q)); };
 const fP = skip => P.filter(p=>passP(p,skip));
-const fV = () => V.filter(v => (F.grp==='all'||v.grp===F.grp) && (F.cl==='all'||v.cl===F.cl) && (!F.q||v.search.includes(F.q))
-  && (F.pe==='all'||(v.proj&&v.proj.pe===F.pe)) && (F.co==='all'||(v.proj&&v.proj.co===F.co)));
-const anyFilter = () => Object.entries(F).some(([k,v])=>k==='q'?!!v:v!=='all');
+/* Invoice-plan lines: business line and client come from the plan itself; year, principal,
+   engineer and status come from the linked job. Unlinked lines drop out when those filters are on. */
+const PROJ_KEYS = ['yr','co','pe','st'];
+const fV = () => V.filter(v => keep('grp',v.grp) && keep('cl',v.cl) && (!F.q || v.search.includes(F.q))
+  && PROJ_KEYS.every(k => !F[k].size || (v.proj && F[k].has(DEF[k].get(v.proj)))));
+const unlinkedHidden = () => PROJ_KEYS.some(k=>F[k].size) ? V.filter(v=>!v.proj && keep('grp',v.grp) && keep('cl',v.cl)).length : 0;
+const anyFilter = () => FILTER_DEFS.some(d=>F[d.k].size) || !!F.q;
 
+let openMS = null, renderTimer = null;
+function scheduleRender(){ clearTimeout(renderTimer); renderTimer = setTimeout(()=>{ regPage=0; render(); }, 140); }
 function buildFilters(){
   const box = $('#filters');
-  box.innerHTML = FILTER_DEFS.map(d => `<div class="fsel"><label for="f-${d.k}">${d.label}</label><select id="f-${d.k}" data-k="${d.k}"><option value="all">All</option>${d.opts().map(o=>`<option value="${esc(o)}">${esc(d.fmt?d.fmt(o):o)}</option>`).join('')}</select></div>`).join('')
+  box.innerHTML = FILTER_DEFS.map(d => `<div class="ms" data-k="${d.k}">
+      <span class="ms-lbl" id="l-${d.k}">${d.label}</span>
+      <button type="button" class="ms-btn" id="f-${d.k}" aria-haspopup="true" aria-expanded="false" aria-controls="p-${d.k}" aria-labelledby="l-${d.k} f-${d.k}"><span class="ms-val">All</span><span class="ms-n" hidden></span></button>
+      <div class="ms-pop" id="p-${d.k}" role="dialog" aria-label="${d.label} options" hidden>
+        <div class="ms-head">
+          ${d.opts().length>7?`<input class="ms-search" type="search" placeholder="Search ${d.label.toLowerCase()}…" aria-label="Search ${d.label.toLowerCase()}">`:''}
+          <div class="ms-acts"><button type="button" data-a="all">Select all</button><button type="button" data-a="matching">Only with matches</button><button type="button" data-a="none">Clear</button></div>
+        </div>
+        <div class="ms-list" role="group" aria-label="${d.label}"></div>
+        <div class="ms-foot"><span class="ms-sum"></span><button type="button" class="btn primary" data-a="done">Done</button></div>
+      </div></div>`).join('')
    + `<div class="search"><label class="sr" for="q">Search jobs</label><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="q" type="search" placeholder="Search SO, PO, job, client…"></div>
-      <button class="btn" id="resetBtn" style="align-self:flex-end" hidden>Reset filters</button>`;
-  box.querySelectorAll('select').forEach(s => s.addEventListener('change', e => { F[s.dataset.k]=s.value; onFilter(); }));
-  let t; $('#q').addEventListener('input', e => { clearTimeout(t); t=setTimeout(()=>{F.q=e.target.value.trim().toLowerCase(); onFilter();},180); });
+      <button class="btn" id="resetBtn" style="align-self:flex-end" hidden>Reset all filters</button>`;
+  box.querySelectorAll('.ms').forEach(ms => {
+    const k = ms.dataset.k, btn = ms.querySelector('.ms-btn'), pop = ms.querySelector('.ms-pop'), srch = ms.querySelector('.ms-search');
+    btn.addEventListener('click', () => pop.hidden ? openPop(k) : closePop(true));
+    if(srch) srch.addEventListener('input', () => fillList(k));
+    pop.addEventListener('click', e => {
+      const a = e.target.closest('[data-a]'); if(!a) return;
+      const vis = visibleOpts(k);
+      if(a.dataset.a==='all'){ vis.forEach(o=>F[k].add(o.v)); if(F[k].size===DEF[k].opts().length) F[k].clear(); changed(k); }
+      else if(a.dataset.a==='matching'){ F[k] = new Set(vis.filter(o=>o.n>0).map(o=>o.v)); if(F[k].size===DEF[k].opts().length) F[k].clear(); changed(k); }
+      else if(a.dataset.a==='none'){ F[k].clear(); changed(k); }
+      else if(a.dataset.a==='done'){ closePop(true); }
+      else if(a.dataset.a==='only'){ e.preventDefault(); F[k] = new Set([a.dataset.v]); changed(k); }
+    });
+    pop.addEventListener('change', e => { const cb = e.target; if(cb.type!=='checkbox') return;
+      cb.checked ? F[k].add(cb.value) : F[k].delete(cb.value);
+      if(F[k].size===DEF[k].opts().length) F[k].clear();   // everything ticked = no filter
+      changed(k, cb.value); });
+    pop.addEventListener('keydown', e => { if(e.key==='Escape'){ e.stopPropagation(); closePop(true); } });
+  });
+  let tq; $('#q').addEventListener('input', e => { clearTimeout(tq); tq=setTimeout(()=>{ F.q=e.target.value.trim().toLowerCase(); onFilter(); },180); });
   $('#resetBtn').addEventListener('click', resetFilters);
+  document.addEventListener('pointerdown', e => { if(openMS && !e.target.closest('.ms[data-k="'+openMS+'"]')) closePop(false); });
 }
-function setFilter(k,v){ F[k]=v; const s=$('#f-'+k); if(s) s.value=v; onFilter(); toast(`Filtered to ${FILTER_DEFS.find(d=>d.k===k).label.toLowerCase()}: ${k==='st'?STAGE_LABEL[v]:k==='grp'?GROUP_LABEL[v]:v}`); }
-function resetFilters(){ Object.keys(F).forEach(k=>F[k]=k==='q'?'':'all'); document.querySelectorAll('#filters select').forEach(s=>s.value='all'); $('#q').value=''; onFilter(); }
-function onFilter(){ regPage=0; renderChips(); render(); }
+/* Options with counts that respect every OTHER active filter, so you can see what each choice would return. */
+function optStats(k){
+  const base = fP(k), g = groupBy(base, p=>DEF[k].get(p));
+  return DEF[k].opts().map(v => ({v, n:(g[v]||[]).length, val:sum(g[v]||[],p=>p.v)}));
+}
+function visibleOpts(k){
+  const q = (document.querySelector(`#p-${k} .ms-search`)||{}).value || '';
+  const ql = q.trim().toLowerCase();
+  return optStats(k).filter(o => !ql || fmtOpt(k,o.v).toLowerCase().includes(ql) || String(o.v).toLowerCase().includes(ql));
+}
+function fillList(k){
+  const pop = $('#p-'+k), list = pop.querySelector('.ms-list'), focusVal = document.activeElement && document.activeElement.closest('.ms-opt') ? document.activeElement.value : null;
+  const opts = visibleOpts(k);
+  const has = opts.filter(o=>o.n>0 || F[k].has(o.v)), none = opts.filter(o=>o.n===0 && !F[k].has(o.v));
+  const row = o => `<label class="ms-opt ${o.n?'':'zero'}"><input type="checkbox" value="${esc(o.v)}" ${F[k].has(o.v)?'checked':''}><span class="t" title="${esc(fmtOpt(k,o.v))}">${esc(fmtOpt(k,o.v))}</span><span class="c">${o.n?`${o.n} · ${short(o.val)}`:'0'}</span><button type="button" class="only" data-a="only" data-v="${esc(o.v)}" aria-label="Only ${esc(fmtOpt(k,o.v))}">Only</button></label>`;
+  list.innerHTML = opts.length ? has.map(row).join('') + (none.length ? `<div class="ms-sep">No matches with the other filters</div>${none.map(row).join('')}` : '')
+                               : `<div class="ms-empty">Nothing matches “${esc(pop.querySelector('.ms-search').value)}”.</div>`;
+  const total = DEF[k].opts().length;
+  pop.querySelector('.ms-sum').textContent = F[k].size ? `${F[k].size} of ${total} selected` : `All ${total} included`;
+  if(focusVal!=null){ const cb=[...list.querySelectorAll('input')].find(i=>i.value===focusVal); if(cb) cb.focus(); }
+}
+function openPop(k){
+  if(openMS && openMS!==k) closePop(false);
+  const pop = $('#p-'+k), btn = $('#f-'+k);
+  pop.classList.remove('right'); pop.hidden = false; btn.setAttribute('aria-expanded','true'); openMS = k;
+  const s = pop.querySelector('.ms-search'); if(s) s.value='';
+  fillList(k);
+  const r = pop.getBoundingClientRect(); if(r.right > window.innerWidth - 8) pop.classList.add('right');
+  (s || pop.querySelector('.ms-opt input')).focus();
+}
+function closePop(returnFocus){
+  if(!openMS) return; const k = openMS; openMS = null;
+  $('#p-'+k).hidden = true; $('#f-'+k).setAttribute('aria-expanded','false');
+  if(returnFocus) $('#f-'+k).focus();
+}
+function changed(k){ syncButtons(); renderChips(); if(openMS) fillList(openMS); scheduleRender(); }
+function syncButtons(){
+  FILTER_DEFS.forEach(d => { const b=$('#f-'+d.k), sel=[...F[d.k]], n=sel.length;
+    b.classList.toggle('on', n>0);
+    b.querySelector('.ms-val').textContent = n===0 ? 'All' : fmtOpt(d.k,sel[0]);
+    const badge=b.querySelector('.ms-n'); badge.hidden = n<2; badge.textContent = '+'+(n-1);
+    b.title = n ? sel.map(v=>fmtOpt(d.k,v)).join(', ') : `${d.label}: all`; });
+}
+/* Chart and table clicks: plain click = show only that item (click it again to clear);
+   Ctrl/Cmd/Shift-click adds or removes it from the current selection. */
+let lastMods = false;
+window.addEventListener('pointerdown', e => { lastMods = e.ctrlKey || e.metaKey || e.shiftKey; }, true);
+window.addEventListener('keydown', e => { if(e.key==='Enter') lastMods = e.ctrlKey || e.metaKey || e.shiftKey; }, true);
+function setFilter(k,v){
+  v = String(v); const s = F[k];
+  if(lastMods){ s.has(v) ? s.delete(v) : s.add(v); }
+  else if(s.size===1 && s.has(v)){ s.clear(); }
+  else { F[k] = new Set([v]); }
+  syncButtons();
+  setTimeout(onFilter, 0);   // let the chart finish handling its own click before it is rebuilt
+  const sel=[...F[k]];
+  toast(sel.length ? `${DEF[k].label}: ${sel.map(x=>fmtOpt(k,x)).join(', ')}${lastMods?'':' · Ctrl/Shift-click to add more'}` : `${DEF[k].label} filter cleared`);
+}
+function resetFilters(){ FILTER_DEFS.forEach(d=>F[d.k].clear()); F.q=''; $('#q').value=''; closePop(false); syncButtons(); onFilter(); }
+function onFilter(){ clearTimeout(renderTimer); regPage=0; renderChips(); render(); }
 function renderChips(){
-  const c=[]; FILTER_DEFS.forEach(d=>{ const s=$('#f-'+d.k); s.classList.toggle('on',F[d.k]!=='all'); if(F[d.k]!=='all') c.push(`<span class="chip">${d.label}: ${esc(d.fmt?d.fmt(F[d.k]):F[d.k])}<button aria-label="Remove ${d.label} filter" data-k="${d.k}">×</button></span>`); });
-  if(F.q) c.push(`<span class="chip">Search: “${esc(F.q)}”<button aria-label="Clear search" data-k="q">×</button></span>`);
+  const c=[];
+  FILTER_DEFS.forEach(d=>{ if(!F[d.k].size) return; const sel=[...F[d.k]].map(v=>fmtOpt(d.k,v));
+    c.push(`<span class="chip"><span class="cv" title="${esc(sel.join(', '))}"><b>${d.label}:</b> ${esc(sel.length>3?sel.slice(0,3).join(', ')+` +${sel.length-3} more`:sel.join(', '))}</span><button type="button" aria-label="Clear ${d.label} filter" data-k="${d.k}">×</button></span>`); });
+  if(F.q) c.push(`<span class="chip"><span class="cv"><b>Search:</b> “${esc(F.q)}”</span><button type="button" aria-label="Clear search" data-k="q">×</button></span>`);
   $('#chips').innerHTML = c.join('');
-  $('#chips').querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{ const k=b.dataset.k; if(k==='q'){F.q='';$('#q').value='';} else {F[k]='all'; $('#f-'+k).value='all';} onFilter(); }));
+  $('#chips').querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{ const k=b.dataset.k; if(k==='q'){F.q='';$('#q').value='';} else F[k].clear(); syncButtons(); onFilter(); }));
   $('#resetBtn').hidden = !anyFilter();
+  const n = fP().length, hid = unlinkedHidden();
+  $('#scope').textContent = anyFilter() ? `Showing ${n.toLocaleString('en-US')} of ${P.length.toLocaleString('en-US')} job lines (${aed(sum(fP(),p=>p.v))}).${hid?` ${hid} invoice-plan line${hid>1?'s':''} not linked to a job ${hid>1?'are':'is'} hidden by the year, principal, engineer or status filter.`:''}` : '';
 }
 
 /* ============================================================
@@ -429,6 +563,7 @@ function chartDefaults(){
 function hexRgb(h){ h=String(h).trim(); if(h.startsWith('rgb')){ const m=h.match(/[\d.]+/g).map(Number); return m.slice(0,3); }
   h=h.replace('#',''); if(h.length===3) h=h.split('').map(c=>c+c).join(''); const n=parseInt(h,16); return [n>>16&255,n>>8&255,n&255]; }
 function shade(h,amt){ const [r,g,b]=hexRgb(h); const f=c=>Math.round(amt<0?c*(1+amt):c+(255-c)*amt); return `rgb(${f(r)},${f(g)},${f(b)})`; }
+function mixCol(a,b,amt){ const x=hexRgb(a), y=hexRgb(b); return `rgb(${x.map((v,i)=>Math.round(v+(y[i]-v)*amt)).join(',')})`; }
 function lum(h){ const [r,g,b]=hexRgb(h); return (0.299*r+0.587*g+0.114*b)/255; }
 const LBL_FONT = '600 11px "IBM Plex Sans", system-ui, sans-serif';
 let LOOK = '3d'; try{ LOOK = localStorage.getItem('mge-look') || '3d'; }catch(e){}
@@ -610,7 +745,7 @@ function buildNav(){
   $('#nav').innerHTML = VIEWS.map(v=>`<button data-v="${v.id}" ${v.id===current?'aria-current="page"':''}><svg viewBox="0 0 24 24" aria-hidden="true">${v.ic}</svg><span class="t">${v.t}</span>${v.id==='quality'?`<span class="count">${RAW.dq.length}</span>`:''}</button>`).join('');
   $('#nav').querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>go(b.dataset.v)));
 }
-function go(id){ current=id; try{history.replaceState(null,'','#'+id);}catch(e){} document.querySelectorAll('#nav button').forEach(b=>b.toggleAttribute('aria-current',b.dataset.v===id)); document.querySelectorAll('#nav button[aria-current]').forEach(b=>b.setAttribute('aria-current','page')); render(); window.scrollTo({top:0}); $('#view').focus({preventScroll:true}); }
+function go(id){ closePop(false); current=id; try{history.replaceState(null,'','#'+id);}catch(e){} document.querySelectorAll('#nav button').forEach(b=>b.toggleAttribute('aria-current',b.dataset.v===id)); document.querySelectorAll('#nav button[aria-current]').forEach(b=>b.setAttribute('aria-current','page')); render(); window.scrollTo({top:0}); $('#view').focus({preventScroll:true}); }
 function render(){
   const v = VIEWS.find(x=>x.id===current);
   $('#title').innerHTML = `${v.t}<span class="sub">${v.s}</span>`;
@@ -652,7 +787,7 @@ function vOverview(){
   if(g!=null) ins.push(['g','↑',`<b>Order intake is up ${pct(g)}</b> year to date: ${aed(cur)} awarded since 1 Jan vs ${aed(prev)} by this date in ${yr-1} (${curY.length} vs ${prevY.length} job lines).`]);
   if(sup26>0) ins.push(['b','◆',`<b>Supply has become a real second engine.</b> Supply awards reached ${aed(sup26)} in ${yr}, ${sup25?`${(sup26/sup25).toFixed(1)}× the ${aed(sup25)} of ${yr-1}`:'new this year'}.`]);
   if(sepAch!=null) ins.push([sepAch>=0.9?'g':'a','✓',`<b>${mLong(LASTM)} billing landed at ${pct(sepAch)} of plan</b>: ${aed(lastRun.act)} invoiced against ${aed(lastRun.plan)}.`]);
-  if(F.cl==='all' && topCl && topShare>0.3) risks.push(['r','!',`<b>${esc(topCl[0])} accounts for ${pct(topShare)}</b> of ${yr} awards. A budget freeze at one client would take out ${pct(topShare)} of new work.`]);
+  if(!F.cl.size && topCl && topShare>0.3) risks.push(['r','!',`<b>${esc(topCl[0])} accounts for ${pct(topShare)}</b> of ${yr} awards. A budget freeze at one client would take out ${pct(topShare)} of new work.`]);
   if(octPlan) risks.push(['r','!',`<b>${aed(octRisk)} of ${mLong(CURM)}'s ${aed(octPlan)} billing plan</b> sits on jobs below 50% progress or still at Open PO. That slice is unlikely to invoice this month.`]);
   if(late.length) risks.push(['a','⏱',`<b>${late.length} live jobs are past planned finish</b>, carrying ${aed(lateV)}. The oldest is ${Math.max(...late.map(p=>p.daysLate))} days over.`]);
   if(overdueBillV) risks.push(['a','⌛',`<b>${aed(overdueBillV)} is still to be invoiced from months already closed</b> (${overdueBill.length} lines), including a balance dated ${fmtDate(overdueBill.sort((a,b)=>a.imD-b.imD)[0].imD)}.`]);
@@ -726,7 +861,9 @@ function drawRunway(id, run){
 function drawYears(id, ps){
   const yrs = [...new Set(ps.map(p=>p.yr))].sort();
   const col = {'SERVICE':cssv('--s-inv'),'SUPPLY':cssv('--brand'),'SUPPLY/SERVICE':cssv('--s-open')};
-  const ds = GROUPS.map(gp=>({label:GROUP_LABEL[gp],data:yrs.map(y=>sum(ps.filter(p=>p.yr===y&&p.grp===gp),p=>p.v)),backgroundColor:col[gp],stack:'y',borderRadius:3}));
+  const dim = c => mixCol(c, cssv('--surface'), 0.68);
+  const on = y => !F.yr.size || F.yr.has(String(y));
+  const ds = GROUPS.map(gp=>({label:GROUP_LABEL[gp],data:yrs.map(y=>sum(ps.filter(p=>p.yr===y&&p.grp===gp),p=>p.v)),backgroundColor:yrs.map(y=>on(y)?col[gp]:dim(col[gp])),stack:'y',borderRadius:3}));
   mk(id,{type:'bar',data:{labels:yrs.map(String),datasets:ds},options:barOpts({stacked:true,onClick:(e,els)=>{ if(els.length) setFilter('yr',String(yrs[els[0].index])); },
     tipExtra:items=>{const y=yrs[items[0].dataIndex]; const t=sum(ps.filter(p=>p.yr===y),p=>p.v); const pv=sum(ps.filter(p=>p.yr===y-1),p=>p.v); return `Total ${full(t)}${pv?`  (${t>=pv?'+':''}${pct((t-pv)/pv)} vs ${y-1})`:''}`;}})});
 }
@@ -1097,7 +1234,7 @@ function start(raw){
   try{ initData(raw); }
   catch(e){ showLoader('data.json was read but could not be used: '+e.message); return; }
   $('#sideFoot').innerHTML = `<strong>Data as of ${fmtDate(TODAY)}</strong><br>Source: ${esc(RAW.source||'tracker workbook')}${RAW.sheets?`, sheets ${esc(RAW.sheets.projects)} (project register) and ${esc(RAW.sheets.invoices)} (invoice plan)`:''}. All values in AED.${RAW.generated?`<br>Converted ${esc(RAW.generated.replace('T',' '))}`:''}`;
-  chartDefaults(); syncThemeBtn(); buildNav(); buildFilters(); renderChips(); render();
+  chartDefaults(); syncThemeBtn(); buildNav(); buildFilters(); syncButtons(); renderChips(); render();
 }
 function showLoader(msg){
   $('#title').textContent = 'Load the tracker data';

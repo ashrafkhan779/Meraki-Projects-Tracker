@@ -1,0 +1,1123 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MGE Project &amp; Billing Command Centre</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.js"></script>
+<style>
+:root{
+  --bg:#F2F4F6;--surface:#FFFFFF;--raised:#EBEEF1;--ink:#14181D;--muted:#55606B;--faint:#86909A;--rule:#DCE1E6;
+  --brand:#FF5757;--brand-ink:#C42E2E;--brand-soft:#FFE3E3;
+  --blue:#2F5E86;--blue-soft:#DCE8F3;--amber:#A86400;--amber-fill:#E2A23B;--amber-soft:#FBEFD9;--green:#1D7449;--green-soft:#DDF1E6;
+  --s-inv:#14181D;--s-prog:#2F5E86;--s-open:#A3AEB9;--s-done:#E2A23B;--s-canc:#D2D7DC;
+  --hero:#14181D;--hero-text:#F4F6F8;--hero-muted:#AEB7C0;
+  --shadow:0 1px 0 rgba(20,24,29,.04);
+  --head:"Archivo",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0E1114;--surface:#161A1F;--raised:#1E242A;--ink:#ECEFF2;--muted:#A9B2BB;--faint:#7A848E;--rule:#2A3138;
+  --brand:#FF5757;--brand-ink:#FF8080;--brand-soft:#3A1E20;
+  --blue:#7FB0DB;--blue-soft:#1D2C3A;--amber:#F0B44C;--amber-fill:#E2A23B;--amber-soft:#33291A;--green:#62CF92;--green-soft:#183025;
+  --s-inv:#E6EAEE;--s-prog:#5E95C6;--s-open:#5D6873;--s-done:#E2A23B;--s-canc:#3A424A;
+  --hero:#1A1F25;--hero-text:#F4F6F8;--hero-muted:#AEB7C0;color-scheme:dark;}}
+:root[data-theme="dark"]{
+  --bg:#0E1114;--surface:#161A1F;--raised:#1E242A;--ink:#ECEFF2;--muted:#A9B2BB;--faint:#7A848E;--rule:#2A3138;
+  --brand:#FF5757;--brand-ink:#FF8080;--brand-soft:#3A1E20;
+  --blue:#7FB0DB;--blue-soft:#1D2C3A;--amber:#F0B44C;--amber-fill:#E2A23B;--amber-soft:#33291A;--green:#62CF92;--green-soft:#183025;
+  --s-inv:#E6EAEE;--s-prog:#5E95C6;--s-open:#5D6873;--s-done:#E2A23B;--s-canc:#3A424A;
+  --hero:#1A1F25;--hero-text:#F4F6F8;--hero-muted:#AEB7C0;color-scheme:dark;}
+*{box-sizing:border-box}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:var(--head);margin:0;letter-spacing:-.01em}
+button,select,input{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+.num{font-family:var(--head);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.app{display:grid;grid-template-columns:236px minmax(0,1fr);min-height:100vh}
+/* Sidebar */
+.side{position:sticky;top:0;height:100vh;background:var(--surface);border-right:1px solid var(--rule);display:flex;flex-direction:column;padding:20px 14px}
+.brand{display:flex;gap:10px;align-items:center;padding:4px 6px 22px}
+.mark{width:40px;height:40px;background:#000;display:grid;place-items:center;border-radius:6px;flex:none}
+.mark span{font-family:var(--head);font-weight:800;color:#FF5757;font-size:14px;letter-spacing:.02em}
+.brand b{display:block;font-family:var(--head);font-size:14px;line-height:1.15}
+.brand small{color:var(--muted);font-size:12px}
+.nav{display:flex;flex-direction:column;gap:2px}
+.nav button{display:flex;align-items:center;gap:11px;width:100%;border:0;background:none;padding:9px 10px;border-radius:7px;cursor:pointer;color:var(--muted);text-align:left;font-weight:500;position:relative;min-height:40px}
+.nav button svg{width:18px;height:18px;flex:none;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.nav button:hover{background:var(--raised);color:var(--ink)}
+.nav button[aria-current="page"]{background:var(--raised);color:var(--ink);font-weight:600}
+.nav button[aria-current="page"]::before{content:"";position:absolute;left:-14px;top:8px;bottom:8px;width:3px;background:var(--brand);border-radius:0 3px 3px 0}
+.nav .count{margin-left:auto;font-size:11px;background:var(--brand-soft);color:var(--brand-ink);padding:1px 7px;border-radius:10px;font-weight:600}
+.side-foot{margin-top:auto;font-size:12px;overflow-wrap:anywhere;color:var(--faint);padding:12px 6px 0;border-top:1px solid var(--rule)}
+.side-foot strong{color:var(--muted);font-weight:600}
+/* Top bar */
+.main{min-width:0}
+.top{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--rule);padding:14px 28px 12px}
+.top-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.top h1{font-size:20px;font-weight:700;margin-right:auto}
+.top .sub{color:var(--muted);font-size:13px;font-weight:400;font-family:var(--body);margin-left:8px}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.fsel{display:flex;flex-direction:column;gap:2px}
+.fsel label{font-size:11px;color:var(--muted);font-weight:500;padding-left:2px}
+select,.search input{height:34px;border:1px solid var(--rule);background:var(--surface);border-radius:7px;padding:0 28px 0 10px;min-width:118px;max-width:190px;cursor:pointer;-webkit-appearance:none;appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);background-position:calc(100% - 15px) 15px,calc(100% - 10px) 15px;background-size:5px 5px;background-repeat:no-repeat}
+select.on{border-color:var(--ink);font-weight:600}
+.search{position:relative;align-self:flex-end}
+.search input{background-image:none;padding:0 10px 0 32px;min-width:250px;cursor:text}
+.search svg{position:absolute;left:10px;top:9px;width:16px;height:16px;stroke:var(--muted);fill:none;stroke-width:1.8}
+.btn{height:34px;border:1px solid var(--rule);background:var(--surface);border-radius:7px;padding:0 12px;cursor:pointer;display:inline-flex;align-items:center;gap:7px;font-weight:500;white-space:nowrap}
+.btn:hover{border-color:var(--muted)}
+.btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.btn.primary{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.btn[hidden]{display:none}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.chip{font-size:12px;background:var(--ink);color:var(--bg);padding:3px 6px 3px 10px;border-radius:14px;display:inline-flex;gap:6px;align-items:center}
+.chip button{border:0;background:rgba(255,255,255,.18);color:inherit;border-radius:50%;width:18px;height:18px;cursor:pointer;line-height:1;padding:0}
+.scope-note{font-size:12px;color:var(--muted);margin-top:6px}
+/* Content */
+.content{padding:24px 28px 60px;max-width:1500px}
+.grid{display:grid;gap:16px}
+.g-12{grid-template-columns:repeat(12,minmax(0,1fr))}
+.span-12{grid-column:span 12}.span-8{grid-column:span 8}.span-7{grid-column:span 7}.span-6{grid-column:span 6}.span-5{grid-column:span 5}.span-4{grid-column:span 4}.span-3{grid-column:span 3}
+.panel{background:var(--surface);border:1px solid var(--rule);border-radius:12px;padding:20px 20px 18px;min-width:0;box-shadow:var(--shadow)}
+.panel h3{font-size:15px;font-weight:700}
+.panel .q{color:var(--muted);font-size:13px;margin-top:2px}
+.panel-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:14px}
+.take{font-size:13px;margin-top:12px;padding-top:10px;border-top:1px dashed var(--rule);color:var(--ink)}
+.take b{font-weight:600}
+.chart{position:relative;height:280px}
+.chart.tall{height:360px}.chart.short{height:220px}
+/* Hero */
+.hero{background:var(--hero);color:var(--hero-text);border-radius:14px;padding:28px 30px;display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:28px;position:relative;overflow:hidden;margin-bottom:16px}
+.hero::after{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--brand)}
+.hero h2{font-size:clamp(24px,3vw,36px);line-height:1.12;font-weight:700;max-width:22ch;letter-spacing:-.02em}
+.hero p{color:var(--hero-muted);max-width:62ch;margin:12px 0 0;font-size:14.5px}
+.hero-stats{display:flex;gap:28px;flex-wrap:wrap;margin-top:22px}
+.hero-stats div{min-width:120px}
+.hero-stats .num{font-size:24px;font-weight:700;color:#fff;display:block}
+.hero-stats span{font-size:12px;color:var(--hero-muted)}
+.health{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:16px}
+.health h4{font-size:13px;font-weight:600;color:var(--hero-muted);font-family:var(--body)}
+.ring{display:flex;align-items:center;gap:14px;margin:10px 0 12px}
+.ring svg{width:86px;height:86px;flex:none}
+.ring .big{font-size:34px;font-weight:800;line-height:1}
+.ring small{display:block;color:var(--hero-muted);font-size:12px;margin-top:4px}
+.sub-scores{display:grid;gap:6px}
+.sub-scores div{display:grid;grid-template-columns:96px 1fr 30px;gap:8px;align-items:center;font-size:12px;color:var(--hero-muted)}
+.bar{height:6px;background:rgba(255,255,255,.12);border-radius:4px;overflow:hidden}
+.bar i{display:block;height:100%;background:#fff;border-radius:4px}
+.bar i.warn{background:var(--amber-fill)}.bar i.bad{background:var(--brand)}
+.health details{margin-top:10px;font-size:12px;color:var(--hero-muted)}
+.health summary{cursor:pointer;color:#fff}
+/* KPI strip (title-block style) */
+.kpis{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));background:var(--surface);border:1px solid var(--rule);border-radius:12px;margin-bottom:16px;overflow:hidden}
+.kpi{padding:16px 18px;border-right:1px solid var(--rule);min-width:0}
+.kpi:last-child{border-right:0}
+.kpi .lbl{font-size:12px;color:var(--muted);font-weight:500;display:flex;gap:6px;align-items:center}
+.kpi .val{font-size:26px;font-weight:700;margin-top:4px;display:block;white-space:nowrap}
+.kpi .cmp{font-size:12px;color:var(--muted);margin-top:2px}
+.up{color:var(--green);font-weight:600}.down{color:var(--brand-ink);font-weight:600}.warnt{color:var(--amber);font-weight:600}
+.info{width:15px;height:15px;border-radius:50%;border:1px solid var(--faint);color:var(--faint);font-size:10px;display:inline-grid;place-items:center;cursor:help;font-weight:600}
+/* Insight lists */
+.ins{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.ins li{display:grid;grid-template-columns:22px 1fr;gap:10px;font-size:13px;line-height:1.45}
+.ins .dot{width:22px;height:22px;border-radius:6px;display:grid;place-items:center;font-size:12px;font-weight:700;font-family:var(--head)}
+.dot.g{background:var(--green-soft);color:var(--green)}.dot.r{background:var(--brand-soft);color:var(--brand-ink)}.dot.a{background:var(--amber-soft);color:var(--amber)}.dot.b{background:var(--blue-soft);color:var(--blue)}
+.ins b{font-weight:600}
+.tabs{display:flex;gap:4px;background:var(--raised);padding:3px;border-radius:8px;width:max-content;max-width:100%;overflow-x:auto}
+.tabs button{border:0;background:none;padding:5px 11px;border-radius:6px;cursor:pointer;font-size:12.5px;font-weight:500;color:var(--muted);white-space:nowrap}
+.tabs button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+/* Tables */
+.tbl-wrap{overflow-x:auto;border:1px solid var(--rule);border-radius:10px}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{padding:9px 12px;text-align:left;border-bottom:1px solid var(--rule);vertical-align:top}
+th{font-weight:600;color:var(--muted);font-size:12px;background:var(--raised);position:sticky;top:0;white-space:nowrap}
+th button{border:0;background:none;font:inherit;color:inherit;cursor:pointer;padding:0;display:inline-flex;gap:4px;align-items:center}
+th[aria-sort="ascending"] button::after{content:"▲";font-size:9px}th[aria-sort="descending"] button::after{content:"▼";font-size:9px}
+td.r,th.r{text-align:right}
+tbody tr:last-child td{border-bottom:0}
+tbody tr.click{cursor:pointer}
+tbody tr.click:hover{background:var(--raised)}
+.desc{max-width:420px;min-width:220px}
+.desc small{display:block;color:var(--muted);font-size:12px}
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;padding:2px 8px;border-radius:10px;white-space:nowrap}
+.pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.p-inv{background:var(--raised);color:var(--ink)}.p-prog{background:var(--blue-soft);color:var(--blue)}.p-open{background:var(--raised);color:var(--muted)}.p-done{background:var(--amber-soft);color:var(--amber)}.p-canc{background:var(--raised);color:var(--faint)}
+.p-high{background:var(--green-soft);color:var(--green)}.p-med{background:var(--amber-soft);color:var(--amber)}.p-risk{background:var(--brand-soft);color:var(--brand-ink)}.p-paid{background:var(--raised);color:var(--muted)}
+.prog{display:flex;align-items:center;gap:8px;min-width:96px}
+.prog .t{flex:1;height:6px;background:var(--raised);border-radius:4px;overflow:hidden}
+.prog .t i{display:block;height:100%;background:var(--s-prog)}
+.prog span{font-size:12px;width:34px;text-align:right;font-variant-numeric:tabular-nums}
+.pager{display:flex;justify-content:space-between;align-items:center;margin-top:12px;gap:10px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.pager .btns{display:flex;gap:6px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.empty{padding:40px;text-align:center;color:var(--muted)}
+.empty b{display:block;color:var(--ink);font-family:var(--head);font-size:16px;margin-bottom:4px}
+/* Gantt */
+.gantt{border:1px solid var(--rule);border-radius:10px;overflow-x:auto}
+.g-inner{min-width:820px}
+.g-row{display:grid;grid-template-columns:300px 1fr;border-bottom:1px solid var(--rule);min-height:36px;cursor:pointer}
+.g-row:hover{background:var(--raised)}
+.g-row:last-child{border-bottom:0}
+.g-lbl{padding:7px 12px;font-size:12.5px;border-right:1px solid var(--rule);overflow:hidden}
+.g-lbl b{display:block;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.g-lbl small{color:var(--muted)}
+.g-track{position:relative}
+.g-bar{position:absolute;top:10px;height:16px;border-radius:4px;background:var(--s-open);overflow:hidden;min-width:4px}
+.g-bar i{position:absolute;left:0;top:0;bottom:0;background:var(--s-prog)}
+.g-bar.late{outline:2px solid var(--brand);outline-offset:1px}
+.g-bar.done{background:var(--s-done)}
+.g-head{display:grid;grid-template-columns:300px 1fr;border-bottom:1px solid var(--rule);background:var(--raised);font-size:11px;color:var(--muted);position:sticky;top:0}
+.g-head .g-track{height:28px}
+.g-tick{position:absolute;top:0;bottom:0;border-left:1px solid var(--rule);padding:6px 0 0 4px;white-space:nowrap}
+.g-today{position:absolute;top:0;bottom:0;width:0;border-left:2px dashed var(--brand);z-index:2}
+.g-tl{font-size:10px;position:absolute;top:2px;left:4px;color:var(--brand-ink);font-weight:600;white-space:nowrap}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:10px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:12px;height:12px;border-radius:3px;display:inline-block}
+/* Drawer */
+.scrim{position:fixed;inset:0;background:rgba(10,12,15,.45);z-index:40;opacity:0;pointer-events:none;transition:opacity .2s}
+.scrim.open{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(560px,100vw);background:var(--surface);z-index:41;transform:translateX(100%);transition:transform .25s cubic-bezier(.2,.7,.2,1);display:flex;flex-direction:column;border-left:1px solid var(--rule);padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+.drawer.open{transform:none}
+.d-head{padding:20px 22px 14px;border-bottom:1px solid var(--rule);display:flex;gap:12px;align-items:flex-start}
+.d-head h3{font-size:17px;line-height:1.3}
+.d-head .x{margin-left:auto}
+.d-body{padding:18px 22px 40px;overflow-y:auto}
+.facts{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:10px;overflow:hidden;margin-bottom:18px}
+.facts div{background:var(--surface);padding:10px 12px}
+.facts span{display:block;font-size:11.5px;color:var(--muted)}
+.facts b{font-weight:600;font-size:13.5px}.facts .pill{width:max-content}
+.steps{list-style:none;margin:0 0 18px;padding:0;position:relative}
+.steps li{display:grid;grid-template-columns:20px 1fr auto;gap:10px;padding:6px 0;font-size:13px;align-items:center;position:relative}
+.steps li::before{content:"";position:absolute;left:9px;top:22px;bottom:-8px;width:2px;background:var(--rule)}
+.steps li:last-child::before{display:none}
+.steps .s{width:20px;height:20px;border-radius:50%;border:2px solid var(--rule);background:var(--surface);z-index:1}
+.steps .s.ok{background:var(--ink);border-color:var(--ink)}
+.steps .s.miss{border-color:var(--amber-fill)}.steps .s.plan{border-style:dashed;border-color:var(--muted)}
+.steps em{font-style:normal;color:var(--muted);font-variant-numeric:tabular-nums;font-size:12.5px}
+.note{background:var(--raised);border-radius:8px;padding:12px 14px;font-size:13px;white-space:pre-wrap;margin-bottom:10px}
+.note b{display:block;font-size:12px;color:var(--muted);font-weight:600;margin-bottom:4px}
+/* What-if */
+.whatif{display:grid;gap:14px}
+.wi-row{display:grid;grid-template-columns:150px 1fr 54px;gap:12px;align-items:center;font-size:13px}
+.wi-row input{width:100%;accent-color:var(--ink)}
+.wi-out{display:flex;gap:24px;flex-wrap:wrap;padding-top:12px;border-top:1px solid var(--rule)}
+.wi-out .num{font-size:26px;font-weight:700;display:block}
+.wi-out span:not(.num){font-size:12px;color:var(--muted)}
+.mini-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px}
+.mini-stats div{border-left:3px solid var(--rule);padding:2px 0 2px 12px}
+.mini-stats .num{font-size:22px;font-weight:700;display:block}
+.mini-stats span:not(.num){font-size:12px;color:var(--muted)}
+.mini-stats .r{border-color:var(--brand)}.mini-stats .a{border-color:var(--amber-fill)}.mini-stats .g{border-color:var(--green)}.mini-stats .b{border-color:var(--blue)}
+.funnel{display:grid;gap:8px}
+.f-row{display:grid;grid-template-columns:150px 1fr 110px;gap:12px;align-items:center;font-size:13px}
+.f-bar{height:26px;background:var(--raised);border-radius:5px;overflow:hidden}
+.f-bar i{display:block;height:100%;border-radius:5px;background:var(--s-prog)}
+[data-look="3d"] .f-bar{box-shadow:inset 0 2px 4px rgba(0,0,0,.12)}
+[data-look="3d"] .f-bar i{background-image:linear-gradient(180deg,rgba(255,255,255,.32) 0%,rgba(255,255,255,.06) 45%,rgba(0,0,0,.18) 100%);box-shadow:0 3px 6px rgba(0,0,0,.18),inset 0 -2px 0 rgba(0,0,0,.18)}
+[data-look="3d"] .g-bar{background-image:linear-gradient(180deg,rgba(255,255,255,.3),rgba(0,0,0,.16));box-shadow:2px 3px 5px rgba(0,0,0,.2)}
+[data-look="3d"] .g-bar i{background-image:linear-gradient(180deg,rgba(255,255,255,.28),rgba(0,0,0,.18))}
+[data-look="3d"] .prog .t{box-shadow:inset 0 1px 2px rgba(0,0,0,.15)}
+[data-look="3d"] .prog .t i{background-image:linear-gradient(180deg,rgba(255,255,255,.35),rgba(0,0,0,.15))}
+[data-look="3d"] .panel{box-shadow:0 1px 0 rgba(20,24,29,.04),0 8px 24px -12px rgba(20,24,29,.18)}
+.f-bar{position:relative}.f-bar b{position:absolute;left:8px;top:50%;transform:translateY(-50%);font-size:11.5px;font-weight:600;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.4)}
+.btn[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.f-row .r{text-align:right;font-variant-numeric:tabular-nums}
+.heat td{text-align:center;font-variant-numeric:tabular-nums;font-size:12.5px}
+.dq-grp{border:1px solid var(--rule);border-radius:10px;margin-bottom:10px;background:var(--surface)}
+.dq-grp summary{padding:12px 16px;cursor:pointer;display:flex;gap:10px;align-items:center;font-weight:600}
+.dq-grp summary .n{margin-left:auto;font-family:var(--head)}
+.dq-grp ul{margin:0;padding:0 16px 14px 36px;font-size:13px;color:var(--muted);max-height:260px;overflow:auto}
+details.data{margin-top:10px;font-size:12.5px}
+details.data summary{cursor:pointer;color:var(--muted)}
+details.data table{margin-top:8px}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:8px;font-size:13px;z-index:60;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.show{opacity:1}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.view{animation:fade .28s ease}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media (max-width:1200px){.kpis{grid-template-columns:repeat(3,1fr)}.kpi:nth-child(3){border-right:0}.kpi:nth-child(-n+3){border-bottom:1px solid var(--rule)}
+  .span-8,.span-7,.span-5,.span-4{grid-column:span 12}.span-6{grid-column:span 12}.span-3{grid-column:span 6}}
+@media (max-width:900px){.app{grid-template-columns:1fr}
+  .side{position:static;height:auto;flex-direction:row;align-items:center;padding:10px 12px;gap:10px;border-right:0;border-bottom:1px solid var(--rule);overflow-x:auto}
+  .brand{padding:0}.brand div{display:none}.side-foot{display:none}
+  .nav{flex-direction:row}.nav button{white-space:nowrap}.nav button span.t{display:none}.nav button[aria-current="page"] span.t{display:inline}.nav button[aria-current="page"]::before{display:none}
+  .hero{grid-template-columns:1fr}.top{padding:12px 16px;position:static}.content{padding:16px}
+  .g-row,.g-head{grid-template-columns:200px 1fr}}
+@media (max-width:600px){.kpis{grid-template-columns:repeat(2,1fr)}.kpi{border-right:1px solid var(--rule)!important;border-bottom:1px solid var(--rule)}.kpi:nth-child(2n){border-right:0!important}
+  .span-3{grid-column:span 12}.fsel{flex:1 1 45%}select{max-width:none;width:100%}.search{flex:1 1 100%;width:100%}.search input{width:100%;min-width:0}
+  .f-row{grid-template-columns:100px 1fr 80px}.wi-row{grid-template-columns:110px 1fr 46px}.facts{grid-template-columns:1fr}
+  .hero{padding:22px 20px}.kpi .val{font-size:22px}}
+@media print{.side,.top .filters,.top .btn{display:none}.app{display:block}}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="side" aria-label="Sections">
+    <div class="brand"><div class="mark" aria-hidden="true"><span>MGE</span></div><div><b>Meraki Global Energy</b><small>Projects &amp; billing</small></div></div>
+    <nav class="nav" id="nav"></nav>
+    <div class="side-foot" id="sideFoot"><strong>Loading data…</strong></div>
+  </aside>
+  <div class="main">
+    <header class="top">
+      <div class="top-row">
+        <h1 id="title">Overview</h1>
+        <button class="btn" id="exportBtn" hidden><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0-4-4m4 4 4-4M5 21h14"/></svg>Export CSV</button>
+        <button class="btn" id="lookBtn" aria-pressed="true" title="Switch between 3D and flat charts"><svg viewBox="0 0 24 24"><path d="M12 3 4 7.5v9L12 21l8-4.5v-9z"/><path d="M4 7.5 12 12l8-4.5M12 12v9"/></svg><span>3D charts</span></button>
+        <button class="btn" id="themeBtn" aria-label="Switch colour theme"><svg viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg><span>Dark</span></button>
+      </div>
+      <div class="filters" id="filters"></div>
+      <div class="chips" id="chips"></div>
+    </header>
+    <main class="content" id="view" tabindex="-1"></main>
+  </div>
+</div>
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="dTitle" aria-hidden="true">
+  <div class="d-head"><div><div id="dSub" style="font-size:12px;color:var(--muted)"></div><h3 id="dTitle"></h3></div><button class="btn x" id="dClose" aria-label="Close details">Close</button></div>
+  <div class="d-body" id="dBody"></div>
+</aside>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* ============================================================
+   DATA (cleaned from the uploaded workbook — see Data quality view)
+   ============================================================ */
+/* Data is loaded from data.json at start-up (see BOOT). These are filled by initData(). */
+let RAW, TODAY, Y, AS_MS, P, V, bySO = {}, byPO = {}, MONTHS = [], PASTM = [], FUTM = [], LASTM = null, CURM = null, WEEK = {cur:'Latest week',prev:'Previous week'};
+const MN = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const DAY = 864e5;
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const isD = s => /^\d{4}-\d{2}-\d{2}$/.test(s||'');
+const pd = s => isD(s) ? new Date(s+'T00:00:00Z') : null;
+const fmtDate = d => d ? d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric',timeZone:'UTC'}) : '—';
+const sum = (a,f) => a.reduce((s,x)=>s+(f?f(x):x||0),0);
+const median = a => { if(!a.length) return null; const s=[...a].sort((x,y)=>x-y); const m=Math.floor(s.length/2); return s.length%2?s[m]:(s[m-1]+s[m])/2; };
+const groupBy = (a,k) => a.reduce((m,x)=>{const key=typeof k==='function'?k(x):x[k]; (m[key]=m[key]||[]).push(x); return m;},{});
+function short(v){ if(v==null||isNaN(v)) return '—'; const a=Math.abs(v);
+  if(a>=1e6) return (v/1e6).toFixed(a>=1e8?0:a>=1e7?1:2)+'M'; if(a>=1e3) return Math.round(v/1e3)+'K'; return Math.round(v).toString(); }
+const aed = v => v==null?'—':'AED '+short(v);
+const full = v => v==null?'—':'AED '+Math.round(v).toLocaleString('en-US');
+const pct = (v,d=0) => v==null||!isFinite(v)?'—':(v*100).toFixed(d)+'%';
+const n0 = v => Math.round(v).toLocaleString('en-US');
+
+const STAGES = ['OPEN PO','IN PROGRESS','WORK COMPLETED','INVOICED','CANCELLED'];
+const STAGE_LABEL = {'OPEN PO':'Open PO','IN PROGRESS':'In progress','WORK COMPLETED':'Work completed','INVOICED':'Invoiced','CANCELLED':'Cancelled'};
+const STAGE_CLS = {'OPEN PO':'p-open','IN PROGRESS':'p-prog','WORK COMPLETED':'p-done','INVOICED':'p-inv','CANCELLED':'p-canc'};
+const STAGE_VAR = {'OPEN PO':'--s-open','IN PROGRESS':'--s-prog','WORK COMPLETED':'--s-done','INVOICED':'--s-inv','CANCELLED':'--s-canc'};
+const GROUPS = ['SERVICE','SUPPLY','SUPPLY/SERVICE'];
+const GROUP_LABEL = {'SERVICE':'Service','SUPPLY':'Supply','SUPPLY/SERVICE':'Supply & service'};
+const titleCase = s => s.toLowerCase().replace(/(^|[\s/(-])([a-z])/g,(m,a,b)=>a+b.toUpperCase());
+
+function initData(raw){
+RAW = raw;
+if(!isD(RAW.asof)) throw new Error('data.json has no valid "asof" date');
+TODAY = pd(RAW.asof); Y = TODAY.getUTCFullYear(); AS_MS = Date.UTC(Y, TODAY.getUTCMonth(), 1);
+WEEK = RAW.weeks || WEEK;
+/* ---------- Projects ---------- */
+P = RAW.projects.map(r => {
+  const o = {...r};
+  o.val = typeof r.po === 'number' ? r.po : null;
+  o.v = o.val || 0;
+  o.lpoD = pd(r.lpo); o.psD = pd(r.ps); o.pfD = pd(r.pf); o.asD = pd(r.as); o.afD = pd(r.af);
+  o.active = ['OPEN PO','IN PROGRESS','WORK COMPLETED'].includes(r.st);
+  o.late = (r.st==='OPEN PO'||r.st==='IN PROGRESS') && o.pfD && o.pfD < TODAY;
+  o.daysLate = o.late ? Math.round((TODAY-o.pfD)/DAY) : 0;
+  o.repOk = isD(r.rep) || r.rep==='APPROVED' || /^MGE-/.test(r.rep);
+  o.wsOk = isD(r.ws); o.waOk = isD(r.wa);
+  o.seOk = isD(r.sed) || (r.sen && r.sen!=='-');
+  o.invOk = !!(r.inv && r.inv!=='-');
+  o.note = (r.wc && r.wc!=='-') ? r.wc : '';
+  o.note40 = (r.wp && r.wp!=='-' && r.wp!=='COMPLETED') ? r.wp : '';
+  o.cl = (r.cl||'').trim(); o.co = (r.co||'').trim(); o.grp = r.grp||''; o.pe = r.pe||''; o.se = r.se||''; o.so = r.so||''; o.cpo = r.cpo||'';
+  o.search = (r.so+' '+r.ds+' '+r.cl+' '+r.co+' '+r.cpo+' '+r.pe+' '+r.se+' '+r.inv).toLowerCase();
+  return o;
+});
+/* ---------- Invoice plan ---------- */
+bySO = {}; byPO = {}; P.forEach(p => { if(p.so && !bySO[p.so]) bySO[p.so]=p; if(p.cpo && !/PENDING|TO BE/i.test(p.cpo) && !byPO[p.cpo]) byPO[p.cpo]=p; });
+MONTHS = (RAW.months||[]).map((m,i)=>{ const s=pd(m.start); return {...m, i, l:m.label, s:+s, past: +s < AS_MS}; });
+PASTM = MONTHS.filter(m=>m.past); FUTM = MONTHS.filter(m=>!m.past);
+LASTM = PASTM[PASTM.length-1] || null; CURM = FUTM[0] || null;
+V = RAW.invoices.map(r => {
+  const o = {...r}; const p = bySO[r.so] || byPO[r.pon] || null;
+  o.proj = p || null; o.st = p ? p.st : null; o.pct = p ? p.pct : null;
+  o.paid = r.pay === 'PAID IN FULL';
+  o.conf = o.paid ? 'paid' : (!p ? 'risk' : (p.st==='WORK COMPLETED'||p.st==='INVOICED'||p.pct>=0.85) ? 'high' : p.pct>=0.5 ? 'med' : 'risk');
+  o.imD = pd(r.im);
+  o.cl = (r.cl||'').trim(); o.so = r.so||''; o.pon = r.pon||'';
+  o.plan = MONTHS.map((m,i)=>(r.plan||[])[i]||0); o.act = MONTHS.map((m,i)=>(r.act||[])[i]||0);
+  o.search = (o.so+' '+r.ds+' '+o.cl+' '+o.pon).toLowerCase();
+  return o;
+});
+}
+const mShort = m => m ? m.l.split(' ')[0] : '';
+const mLong = m => m ? new Date(m.s).toLocaleDateString('en-GB',{month:'long',timeZone:'UTC'}) : '';
+const futRange = () => FUTM.length ? (FUTM.length>1 ? `${mShort(FUTM[0])}–${mShort(FUTM[FUTM.length-1])}` : mShort(FUTM[0])) : 'upcoming months';
+const sumM = (vs, key, ms) => sum(ms, m => sum(vs, v => v[key][m.i]));
+const CONF_LABEL = {high:'High confidence',med:'Medium confidence',risk:'At risk',paid:'Paid'};
+const CONF_CLS = {high:'p-high',med:'p-med',risk:'p-risk',paid:'p-paid'};
+
+/* ============================================================
+   STATE, FILTERS
+   ============================================================ */
+const F = {yr:'all',grp:'all',co:'all',cl:'all',pe:'all',st:'all',q:''};
+const FILTER_DEFS = [
+  {k:'yr',label:'Tracker year',opts:()=>[...new Set(P.map(p=>p.yr))].sort((a,b)=>b-a).map(String)},
+  {k:'grp',label:'Business line',opts:()=>GROUPS,fmt:g=>GROUP_LABEL[g]},
+  {k:'cl',label:'End client',opts:()=>Object.entries(groupBy(P,'cl')).sort((a,b)=>sum(b[1],x=>x.v)-sum(a[1],x=>x.v)).map(e=>e[0])},
+  {k:'co',label:'Principal / brand',opts:()=>Object.entries(groupBy(P,'co')).sort((a,b)=>b[1].length-a[1].length).map(e=>e[0])},
+  {k:'pe',label:'Project engineer',opts:()=>Object.keys(groupBy(P.filter(p=>p.pe),'pe')).sort()},
+  {k:'st',label:'Project status',opts:()=>STAGES,fmt:s=>STAGE_LABEL[s]},
+];
+const passP = (p, skip) => (skip==='yr'||F.yr==='all'||String(p.yr)===F.yr) && (F.grp==='all'||p.grp===F.grp) && (F.co==='all'||p.co===F.co)
+  && (F.cl==='all'||p.cl===F.cl) && (F.pe==='all'||p.pe===F.pe) && (F.st==='all'||p.st===F.st) && (!F.q||p.search.includes(F.q));
+const fP = skip => P.filter(p=>passP(p,skip));
+const fV = () => V.filter(v => (F.grp==='all'||v.grp===F.grp) && (F.cl==='all'||v.cl===F.cl) && (!F.q||v.search.includes(F.q))
+  && (F.pe==='all'||(v.proj&&v.proj.pe===F.pe)) && (F.co==='all'||(v.proj&&v.proj.co===F.co)));
+const anyFilter = () => Object.entries(F).some(([k,v])=>k==='q'?!!v:v!=='all');
+
+function buildFilters(){
+  const box = $('#filters');
+  box.innerHTML = FILTER_DEFS.map(d => `<div class="fsel"><label for="f-${d.k}">${d.label}</label><select id="f-${d.k}" data-k="${d.k}"><option value="all">All</option>${d.opts().map(o=>`<option value="${esc(o)}">${esc(d.fmt?d.fmt(o):o)}</option>`).join('')}</select></div>`).join('')
+   + `<div class="search"><label class="sr" for="q">Search jobs</label><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="q" type="search" placeholder="Search SO, PO, job, client…"></div>
+      <button class="btn" id="resetBtn" style="align-self:flex-end" hidden>Reset filters</button>`;
+  box.querySelectorAll('select').forEach(s => s.addEventListener('change', e => { F[s.dataset.k]=s.value; onFilter(); }));
+  let t; $('#q').addEventListener('input', e => { clearTimeout(t); t=setTimeout(()=>{F.q=e.target.value.trim().toLowerCase(); onFilter();},180); });
+  $('#resetBtn').addEventListener('click', resetFilters);
+}
+function setFilter(k,v){ F[k]=v; const s=$('#f-'+k); if(s) s.value=v; onFilter(); toast(`Filtered to ${FILTER_DEFS.find(d=>d.k===k).label.toLowerCase()}: ${k==='st'?STAGE_LABEL[v]:k==='grp'?GROUP_LABEL[v]:v}`); }
+function resetFilters(){ Object.keys(F).forEach(k=>F[k]=k==='q'?'':'all'); document.querySelectorAll('#filters select').forEach(s=>s.value='all'); $('#q').value=''; onFilter(); }
+function onFilter(){ regPage=0; renderChips(); render(); }
+function renderChips(){
+  const c=[]; FILTER_DEFS.forEach(d=>{ const s=$('#f-'+d.k); s.classList.toggle('on',F[d.k]!=='all'); if(F[d.k]!=='all') c.push(`<span class="chip">${d.label}: ${esc(d.fmt?d.fmt(F[d.k]):F[d.k])}<button aria-label="Remove ${d.label} filter" data-k="${d.k}">×</button></span>`); });
+  if(F.q) c.push(`<span class="chip">Search: “${esc(F.q)}”<button aria-label="Clear search" data-k="q">×</button></span>`);
+  $('#chips').innerHTML = c.join('');
+  $('#chips').querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{ const k=b.dataset.k; if(k==='q'){F.q='';$('#q').value='';} else {F[k]='all'; $('#f-'+k).value='all';} onFilter(); }));
+  $('#resetBtn').hidden = !anyFilter();
+}
+
+/* ============================================================
+   CHART HELPERS
+   ============================================================ */
+const charts = {};
+const cssv = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+function chartDefaults(){
+  if(!window.Chart) return;
+  Chart.defaults.font.family = '"IBM Plex Sans", system-ui, sans-serif';
+  Chart.defaults.font.size = 12;
+  Chart.defaults.color = cssv('--muted');
+  Chart.defaults.borderColor = cssv('--rule');
+  Chart.defaults.plugins.legend.labels.boxWidth = 12;
+  Chart.defaults.plugins.legend.labels.boxHeight = 12;
+  Chart.defaults.plugins.tooltip.backgroundColor = cssv('--ink');
+  Chart.defaults.plugins.tooltip.titleColor = cssv('--bg');
+  Chart.defaults.plugins.tooltip.bodyColor = cssv('--bg');
+  Chart.defaults.plugins.tooltip.padding = 10;
+  Chart.defaults.plugins.tooltip.cornerRadius = 6;
+  Chart.defaults.animation.duration = matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 500;
+}
+/* ---------- Colour helpers ---------- */
+function hexRgb(h){ h=String(h).trim(); if(h.startsWith('rgb')){ const m=h.match(/[\d.]+/g).map(Number); return m.slice(0,3); }
+  h=h.replace('#',''); if(h.length===3) h=h.split('').map(c=>c+c).join(''); const n=parseInt(h,16); return [n>>16&255,n>>8&255,n&255]; }
+function shade(h,amt){ const [r,g,b]=hexRgb(h); const f=c=>Math.round(amt<0?c*(1+amt):c+(255-c)*amt); return `rgb(${f(r)},${f(g)},${f(b)})`; }
+function lum(h){ const [r,g,b]=hexRgb(h); return (0.299*r+0.587*g+0.114*b)/255; }
+const LBL_FONT = '600 11px "IBM Plex Sans", system-ui, sans-serif';
+let LOOK = '3d'; try{ LOOK = localStorage.getItem('mge-look') || '3d'; }catch(e){}
+const is3D = () => LOOK === '3d';
+const colorAt = (ds,i) => Array.isArray(ds._c) ? ds._c[i % ds._c.length] : ds._c;
+function rectOf(el, horiz){
+  const p = el.getProps(['x','y','base','width','height'], true);
+  return horiz ? {L:Math.min(p.x,p.base), R:Math.max(p.x,p.base), T:p.y-p.height/2, B:p.y+p.height/2}
+               : {L:p.x-p.width/2, R:p.x+p.width/2, T:Math.min(p.y,p.base), B:Math.max(p.y,p.base)};
+}
+function depthOf(chart){
+  const horiz = chart.options.indexAxis==='y'; let th = 40;
+  chart.data.datasets.forEach((ds,di)=>{ const m=chart.getDatasetMeta(di); if(m.type==='bar'&&m.data[0]){ const r=rectOf(m.data[0],horiz); th=Math.min(th, horiz? r.B-r.T : r.R-r.L); } });
+  return Math.max(4, Math.min(11, th*0.32));
+}
+function poly(ctx, pts, fill){ ctx.beginPath(); ctx.moveTo(pts[0][0],pts[0][1]); pts.slice(1).forEach(p=>ctx.lineTo(p[0],p[1])); ctx.closePath(); ctx.fillStyle=fill; ctx.fill(); }
+
+/* 3D extrusion: draws a lit top face and a shaded side face behind every bar. Bar heights stay true to the value. */
+const depthPlugin = {
+  id:'depth3d',
+  beforeDatasetsDraw(chart){
+    if(!is3D()) return; const ctx=chart.ctx, horiz=chart.options.indexAxis==='y', D=depthOf(chart); chart.$D=D;
+    ctx.save();
+    chart.data.datasets.forEach((ds,di)=>{ const m=chart.getDatasetMeta(di); if(m.type!=='bar'||!chart.isDatasetVisible(di)) return;
+      m.data.forEach((el,i)=>{ const v=ds.data[i]; if(!v) return; const r=rectOf(el,horiz); if(r.R-r.L<1&&r.B-r.T<1) return; const c=colorAt(ds,i);
+        poly(ctx,[[r.R,r.T],[r.R+D,r.T-D],[r.R+D,r.B-D],[r.R,r.B]], shade(c,-0.35));   // side
+        poly(ctx,[[r.L,r.T],[r.R,r.T],[r.R+D,r.T-D],[r.L+D,r.T-D]], shade(c,0.28));    // top
+      }); });
+    ctx.restore();
+  },
+  beforeDatasetDraw(chart,args){ if(!is3D()) return; const m=args.meta, ctx=chart.ctx;
+    if(m.type==='line'){ const c=chart.data.datasets[args.index].borderColor; ctx.save(); ctx.shadowColor='rgba(0,0,0,.28)'; ctx.shadowBlur=10; ctx.shadowOffsetY=6; chart.$lineShadow=true; } },
+  afterDatasetDraw(chart){ if(chart.$lineShadow){ chart.ctx.restore(); chart.$lineShadow=false; } }
+};
+
+/* Value labels on every bar, stack and line point. */
+const valuePlugin = {
+  id:'valueLabels',
+  afterDatasetsDraw(chart){
+    const o = chart.options.plugins.valueLabels || {}; if(o.display===false) return;
+    const ctx=chart.ctx, horiz=chart.options.indexAxis==='y', D=is3D()?(chart.$D||depthOf(chart)):0;
+    const ink=cssv('--ink'), halo=cssv('--surface');
+    const valAxis = chart.options.scales && chart.options.scales[horiz?'x':'y'];
+    const stacked = !!(valAxis && valAxis.stacked);
+    const stacks = {};
+    ctx.save(); ctx.font=LBL_FONT; ctx.lineJoin='round';
+    const txt = (s,x,y,align,col,haloOn=true) => { ctx.textAlign=align; ctx.textBaseline='middle'; if(haloOn){ ctx.lineWidth=3.5; ctx.strokeStyle=halo; ctx.strokeText(s,x,y); } ctx.fillStyle=col; ctx.fillText(s,x,y); };
+    chart.data.datasets.forEach((ds,di)=>{
+      const m=chart.getDatasetMeta(di); if(!chart.isDatasetVisible(di)) return;
+      const fmt = v => (ds.lblPrefix||'') + (ds.lbl==='pct' ? v.toFixed(0)+'%' : ds.lbl==='int' ? Math.round(v).toLocaleString('en-US') : short(v));
+      if(m.type==='line'){
+        if(ds.labels===false) return;
+        m.data.forEach((pt,i)=>{ const v=ds.data[i]; if(v==null||(ds.labelIdx&&!ds.labelIdx.includes(i))) return; txt(fmt(v), pt.x, pt.y-13, 'center', ds.borderColor||ink); });
+        return;
+      }
+      if(m.type!=='bar') return;
+      m.data.forEach((el,i)=>{ const v=ds.data[i]; if(!v) return; const r=rectOf(el,horiz);
+        if(stacked){
+          const len = horiz ? r.R-r.L : r.B-r.T, th = horiz ? r.B-r.T : r.R-r.L; const s=fmt(v);
+          const tw = ctx.measureText(s).width;
+          if(horiz ? (len > tw + 10 && th > 14) : (len > 17 && th > tw + 8)){
+            const c=colorAt(ds,i); txt(s, (r.L+r.R)/2, (r.T+r.B)/2, 'center', lum(c)>0.62?'#14181D':'#FFFFFF', false);
+          }
+          const key=i+'|'+(ds.stack||'_'); const S=stacks[key]||(stacks[key]={tot:0,r:null});
+          S.tot+=v; if(!S.r) S.r={...r}; else { S.r.L=Math.min(S.r.L,r.L); S.r.R=Math.max(S.r.R,r.R); S.r.T=Math.min(S.r.T,r.T); S.r.B=Math.max(S.r.B,r.B); }
+        } else {
+          if(horiz) txt(fmt(v), r.R+D+6, (r.T+r.B)/2 - D/2, 'left', ink);
+          else txt(fmt(v), (r.L+r.R)/2 + D/2, r.T-D-9, 'center', ink);
+        }
+      });
+    });
+    if(stacked && o.totals!==false) Object.values(stacks).forEach(S=>{ if(!S.tot) return; const s=(o.totalPrefix||'')+short(S.tot); ctx.font='700 11.5px "IBM Plex Sans", system-ui, sans-serif';
+      if(horiz) txt(s, S.r.R+D+6, (S.r.T+S.r.B)/2 - D/2, 'left', ink); else txt(s, (S.r.L+S.r.R)/2 + D/2, S.r.T-D-9, 'center', ink); ctx.font=LBL_FONT; });
+    ctx.restore();
+  }
+};
+let pluginsRegistered = false;
+
+/* Applies the 3D or flat look to a chart config and reserves room for labels. */
+function applyLook(cfg){
+  const horiz = cfg.options && cfg.options.indexAxis==='y';
+  const hasLine = cfg.type==='line' || cfg.data.datasets.some(d=>d.type==='line');
+  cfg.data.datasets.forEach(ds=>{
+    const type = ds.type || cfg.type;
+    if(type==='bar'){
+      ds._c = ds.backgroundColor;
+      if(is3D()){
+        ds.borderRadius = 0;
+        ds.backgroundColor = c => { const chart=c.chart, a=chart.chartArea, base=colorAt(ds, c.dataIndex||0); if(!a) return base;
+          const g = horiz ? chart.ctx.createLinearGradient(a.left,0,a.right,0) : chart.ctx.createLinearGradient(0,a.bottom,0,a.top);
+          g.addColorStop(0, shade(base,-0.14)); g.addColorStop(1, shade(base,0.16)); return g; };
+        ds.categoryPercentage = ds.categoryPercentage || 0.72;
+      }
+    }
+    if(type==='line' && is3D() && ds.borderWidth) ds.borderWidth = ds.borderWidth + 0.5;
+  });
+  cfg.options = cfg.options || {};
+  const pad = cfg.options.layout && cfg.options.layout.padding || {};
+  cfg.options.layout = {padding:{top:(pad.top||0)+26, right:(pad.right||0)+(horiz?64:hasLine?30:14), left:pad.left||0, bottom:pad.bottom||0}};
+  return cfg;
+}
+function mk(id, cfg){
+  if(charts[id]) { charts[id].destroy(); delete charts[id]; }
+  if(window.Chart && !pluginsRegistered){ Chart.register(depthPlugin, valuePlugin); pluginsRegistered = true; }
+  if(cfg) cfg = applyLook(cfg);
+  const el = document.getElementById(id);
+  if(!el) return;
+  if(!window.Chart){ el.parentElement.innerHTML='<div class="empty"><b>Charts could not load</b>The charting library is unavailable on this connection. Figures and tables on this page still work; reload to try again.</div>'; return; }
+  charts[id] = new Chart(el, cfg);
+}
+const aedTick = v => { const a=Math.abs(v); if(a>=1e6) return +(v/1e6).toFixed(2)+'M'; if(a>=1e3) return Math.round(v/1e3)+'K'; return v; };
+const tipAED = ctx => `${ctx.dataset.label}: ${full(ctx.parsed.y ?? ctx.parsed.x ?? ctx.parsed)}`;
+function barOpts({stacked=false, horizontal=false, legend=true, onClick=null, tipExtra=null}={}){
+  const val = horizontal ? 'x' : 'y', cat = horizontal ? 'y' : 'x';
+  return { responsive:true, maintainAspectRatio:false, indexAxis: horizontal?'y':'x',
+    interaction:{mode:'index',intersect:false},
+    onClick, onHover:onClick?((e,els)=>{e.native.target.style.cursor=els.length?'pointer':'default'}):undefined,
+    scales:{ [val]:{stacked, beginAtZero:true, ticks:{callback:aedTick}, grid:{color:cssv('--rule')}, border:{display:false}},
+             [cat]:{stacked, grid:{display:false}, ticks:{autoSkip:false, maxRotation:0, callback:function(v){const l=this.getLabelForValue(v); return horizontal && l.length>26? l.slice(0,25)+'…':l;}}} },
+    plugins:{ legend:{display:legend, position:'bottom', align:'start'}, tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: ${full(horizontal?ctx.parsed.x:ctx.parsed.y)}`, afterBody:tipExtra||undefined}} } };
+}
+function dataTable(headers, rows){
+  return `<details class="data"><summary>Show the numbers behind this chart</summary><div class="tbl-wrap"><table><thead><tr>${headers.map((h,i)=>`<th class="${i?'r':''}">${h}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map((c,i)=>`<td class="${i?'r':''}">${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div></details>`;
+}
+const panel = (cls, title, q, body, side='') => `<section class="panel ${cls}"><div class="panel-head"><div><h3>${title}</h3>${q?`<div class="q">${q}</div>`:''}</div>${side}</div>${body}</section>`;
+const kpi = (lbl, val, cmp, tip) => `<div class="kpi"><div class="lbl">${lbl}${tip?`<span class="info" title="${esc(tip)}" aria-label="${esc(tip)}" tabindex="0">i</span>`:''}</div><span class="val num" title="${esc(val.title||'')}">${val.text||val}</span><div class="cmp">${cmp||''}</div></div>`;
+const pill = st => `<span class="pill ${STAGE_CLS[st]||'p-open'}">${STAGE_LABEL[st]||esc(st)}</span>`;
+const progBar = p => `<div class="prog"><div class="t"><i style="width:${Math.min(100,Math.round(p*100))}%"></i></div><span>${Math.round(p*100)}%</span></div>`;
+const emptyState = (t,m) => `<div class="empty"><b>${t}</b>${m}<br><br><button class="btn" onclick="resetFilters()">Reset filters</button></div>`;
+
+/* ============================================================
+   ANALYTICS
+   ============================================================ */
+function ytd(list, year){ const s=Date.UTC(year,0,1), e=Date.UTC(year,TODAY.getUTCMonth(),TODAY.getUTCDate()); return list.filter(p=>p.lpoD&&p.lpoD>=s&&p.lpoD<=e); }
+function billingRunway(vs){
+  const out = MONTHS.map(m => ({m:m.l, past:m.past, plan:0, act:0, high:0, med:0, risk:0}));
+  vs.forEach(v => MONTHS.forEach((m,i) => {
+    out[i].plan += v.plan[i]; out[i].act += v.act[i];
+    // Current and future months: split the not-yet-invoiced part of the plan by job confidence
+    if(!m.past){ const rem = Math.max(0, v.plan[i]-v.act[i]); if(rem){ const c = v.conf==='paid'?'high':v.conf; out[i][c]+=rem; } }
+  }));
+  return out;
+}
+const runSum = (run, ms, k) => sum(ms, m => run[m.i][k]);
+function healthScores(ps, vs, allPs){
+  const yr = TODAY.getUTCFullYear();
+  const cur = sum(ytd(allPs,yr),p=>p.v), prev = sum(ytd(allPs,yr-1),p=>p.v);
+  const growth = prev ? (cur-prev)/prev : null;
+  const sGrowth = growth==null ? 50 : Math.max(0,Math.min(100, 60 + growth*60));
+  const lp = LASTM ? sum(vs,v=>v.plan[LASTM.i]) : 0, la = LASTM ? sum(vs,v=>v.act[LASTM.i]) : 0;
+  const sBill = lp ? Math.max(0,Math.min(100, la/lp*100)) : 50;
+  const live = ps.filter(p=>p.st==='OPEN PO'||p.st==='IN PROGRESS');
+  const lateV = sum(live.filter(p=>p.late),p=>p.v), liveV = sum(live,p=>p.v);
+  const sDel = liveV ? Math.max(0, 100 - lateV/liveV*100*1.5) : 100;
+  const cl = Object.values(groupBy(allPs.filter(p=>p.yr===yr),'cl')).map(a=>sum(a,p=>p.v)).sort((a,b)=>b-a);
+  const top = cl.length ? cl[0]/sum(cl) : 0;
+  const sConc = Math.max(0, Math.min(100, 100 - Math.max(0, top-0.2)*160));
+  const issues = RAW.dq.length; const sData = Math.max(0, 100 - issues/allPs.length*100*1.6);
+  const parts = [{k:'Order growth',v:sGrowth},{k:'Billing delivery',v:sBill},{k:'Schedule',v:sDel},{k:'Client spread',v:sConc},{k:'Data hygiene',v:sData}];
+  return {overall: Math.round(sum(parts,p=>p.v)/parts.length), parts, growth, top};
+}
+
+/* ============================================================
+   VIEWS
+   ============================================================ */
+const VIEWS = [
+  {id:'overview', t:'Overview', s:'What matters this week', ic:'<rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/>'},
+  {id:'orders', t:'Order book & growth', s:'Awards by year, month, line and principal', ic:'<path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/>'},
+  {id:'billing', t:'Billing runway', s:'Invoice plan vs actual by month', ic:'<path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/>'},
+  {id:'delivery', t:'Delivery & schedule', s:'Live jobs, timeline and late work', ic:'<path d="M3 6h10M3 12h16M3 18h7"/><circle cx="17" cy="6" r="2"/><circle cx="13" cy="18" r="2"/>'},
+  {id:'closeout', t:'Close-out & leakage', s:'Finished work waiting to be billed', ic:'<path d="M9 12l2 2 4-4"/><path d="M5 4h14v16H5z"/>'},
+  {id:'clients', t:'Clients', s:'Concentration, dormancy and value', ic:'<path d="M3 21V7l9-4 9 4v14"/><path d="M9 21v-6h6v6"/>'},
+  {id:'team', t:'Engineering team', s:'Workload and delivery by engineer', ic:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.4 3.4-5 6.5-5s5.7 1.6 6.5 5"/><circle cx="17.5" cy="9" r="2.5"/><path d="M17 14.5c2.4.2 4 1.6 4.5 4"/>'},
+  {id:'register', t:'Project register', s:'Every job line, searchable', ic:'<path d="M3 5h18M3 12h18M3 19h18"/>'},
+  {id:'quality', t:'Data quality', s:'Fixes that make these numbers trustworthy', ic:'<path d="M12 3l9 16H3z"/><path d="M12 10v4M12 17v.5"/>'},
+];
+let current = (location.hash||'').slice(1); if(!VIEWS.find(v=>v.id===current)) current='overview';
+function buildNav(){
+  $('#nav').innerHTML = VIEWS.map(v=>`<button data-v="${v.id}" ${v.id===current?'aria-current="page"':''}><svg viewBox="0 0 24 24" aria-hidden="true">${v.ic}</svg><span class="t">${v.t}</span>${v.id==='quality'?`<span class="count">${RAW.dq.length}</span>`:''}</button>`).join('');
+  $('#nav').querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>go(b.dataset.v)));
+}
+function go(id){ current=id; try{history.replaceState(null,'','#'+id);}catch(e){} document.querySelectorAll('#nav button').forEach(b=>b.toggleAttribute('aria-current',b.dataset.v===id)); document.querySelectorAll('#nav button[aria-current]').forEach(b=>b.setAttribute('aria-current','page')); render(); window.scrollTo({top:0}); $('#view').focus({preventScroll:true}); }
+function render(){
+  const v = VIEWS.find(x=>x.id===current);
+  $('#title').innerHTML = `${v.t}<span class="sub">${v.s}</span>`;
+  Object.keys(charts).forEach(k=>{charts[k].destroy(); delete charts[k];});
+  $('#exportBtn').hidden = !((current==='register'||current==='billing'||current==='delivery'||current==='closeout'));
+  ({overview:vOverview, orders:vOrders, billing:vBilling, delivery:vDelivery, closeout:vCloseout, clients:vClients, team:vTeam, register:vRegister, quality:vQuality})[current]();
+}
+
+/* ---------------- OVERVIEW ---------------- */
+function vOverview(){
+  const ps = fP(), allNoYr = fP('yr'), vs = fV();
+  const view = $('#view');
+  if(!ps.length){ view.innerHTML = `<div class="view">${emptyState('No jobs match these filters','Try widening the year, client or status.')}</div>`; return; }
+  const unbilled = ps.filter(p=>p.active), unbV = sum(unbilled,p=>p.v), earned = sum(unbilled,p=>p.v*p.pct);
+  const life = sum(ps,p=>p.v);
+  const yr = Y, curY = ytd(allNoYr,yr), prevY = ytd(allNoYr,yr-1);
+  const cur = sum(curY,p=>p.v), prev = sum(prevY,p=>p.v), g = prev? (cur-prev)/prev : null;
+  const run = billingRunway(vs);
+  const q4 = runSum(run,FUTM,'plan'), q4risk = runSum(run,FUTM,'risk');
+  const lastRun = LASTM ? run[LASTM.i] : null, curRun = CURM ? run[CURM.i] : null;
+  const sepAch = lastRun && lastRun.plan ? lastRun.act/lastRun.plan : null;
+  const late = ps.filter(p=>p.late), lateV = sum(late,p=>p.v);
+  const done = ps.filter(p=>p.st==='WORK COMPLETED'), doneV = sum(done,p=>p.v);
+  const clientsN = new Set(unbilled.map(p=>p.cl)).size;
+  const H = healthScores(ps, vs, P);
+  const octRisk = curRun?curRun.risk:0, octPlan = curRun?curRun.plan:0;
+  const heavy = FUTM.length ? FUTM.map(m=>run[m.i]).reduce((a,b)=>b.plan>a.plan?b:a) : {m:'—',plan:0};
+
+  // Insights
+  const y26 = ps.filter(p=>p.yr===yr); const cl26 = Object.entries(groupBy(y26,'cl')).map(([k,a])=>[k,sum(a,p=>p.v)]).sort((a,b)=>b[1]-a[1]);
+  const topCl = cl26[0]; const topShare = topCl ? topCl[1]/sum(cl26,x=>x[1]) : 0;
+  const grpY = gName => [sum(ps.filter(p=>p.yr===yr-1&&p.grp===gName),p=>p.v), sum(ps.filter(p=>p.yr===yr&&p.grp===gName),p=>p.v)];
+  const [sup25, sup26] = grpY('SUPPLY');
+  const dormant = Object.entries(groupBy(P,'cl')).map(([k,a])=>({k, life:sum(a,p=>p.v), last:Math.max(...a.map(p=>p.lpoD?+p.lpoD:0))}))
+     .filter(c=>c.last && (TODAY-c.last)/DAY>270 && c.life>1e6).sort((a,b)=>b.life-a.life);
+  const overdueBill = vs.filter(v=>!v.paid && v.bal>0 && v.imD && v.imD < AS_MS); const overdueBillV = sum(overdueBill,v=>v.bal);
+  const noPay = vs.filter(v=>!v.pay).length;
+  const ins = [], risks = [], opps = [];
+  if(g!=null) ins.push(['g','↑',`<b>Order intake is up ${pct(g)}</b> year to date: ${aed(cur)} awarded since 1 Jan vs ${aed(prev)} by this date in ${yr-1} (${curY.length} vs ${prevY.length} job lines).`]);
+  if(sup26>0) ins.push(['b','◆',`<b>Supply has become a real second engine.</b> Supply awards reached ${aed(sup26)} in ${yr}, ${sup25?`${(sup26/sup25).toFixed(1)}× the ${aed(sup25)} of ${yr-1}`:'new this year'}.`]);
+  if(sepAch!=null) ins.push([sepAch>=0.9?'g':'a','✓',`<b>${mLong(LASTM)} billing landed at ${pct(sepAch)} of plan</b>: ${aed(lastRun.act)} invoiced against ${aed(lastRun.plan)}.`]);
+  if(F.cl==='all' && topCl && topShare>0.3) risks.push(['r','!',`<b>${esc(topCl[0])} accounts for ${pct(topShare)}</b> of ${yr} awards. A budget freeze at one client would take out ${pct(topShare)} of new work.`]);
+  if(octPlan) risks.push(['r','!',`<b>${aed(octRisk)} of ${mLong(CURM)}'s ${aed(octPlan)} billing plan</b> sits on jobs below 50% progress or still at Open PO. That slice is unlikely to invoice this month.`]);
+  if(late.length) risks.push(['a','⏱',`<b>${late.length} live jobs are past planned finish</b>, carrying ${aed(lateV)}. The oldest is ${Math.max(...late.map(p=>p.daysLate))} days over.`]);
+  if(overdueBillV) risks.push(['a','⌛',`<b>${aed(overdueBillV)} is still to be invoiced from months already closed</b> (${overdueBill.length} lines), including a balance dated ${fmtDate(overdueBill.sort((a,b)=>a.imD-b.imD)[0].imD)}.`]);
+  if(noPay) risks.push(['a','?',`<b>Collections are not tracked.</b> ${noPay} invoice-plan lines have no payment status and the past-due age column is empty, so overdue receivables are invisible.`]);
+  if(doneV) opps.push(['g','→',`<b>${aed(doneV)} of finished work is ready to bill</b> across ${done.length} lines marked Work completed. Closing the paperwork is the fastest cash available.`]);
+  if(earned) opps.push(['b','◑',`<b>${aed(earned)} is already earned on site</b> by reported progress but not yet invoiced. Milestone billing on the largest jobs would pull cash forward.`]);
+  if(dormant.length) opps.push(['b','↺',`<b>Reactivate dormant accounts:</b> ${dormant.slice(0,3).map(d=>`${esc(d.k)} (${aed(d.life)} lifetime)`).join(', ')} have not placed an order in 9+ months.`]);
+
+  const ringC = 2*Math.PI*36, sc = H.overall;
+  const scCls = v => v>=75?'':v>=55?'warn':'bad';
+  view.innerHTML = `<div class="view">
+  <section class="hero" aria-label="Headline">
+    <div>
+      <h2>${aed(unbV)} of awarded work is still to be billed.</h2>
+      <p>${unbilled.length} job lines across ${clientsN} client${clientsN===1?'':'s'} are open. ${aed(earned)} of that is already earned on site by reported progress. ${heavy.m.split(' ')[0]} carries the heaviest billing plan of the quarter at ${aed(heavy.plan)}.</p>
+      <div class="hero-stats">
+        <div><span class="num">${aed(q4)}</span><span>Billing planned, ${futRange()}</span></div>
+        <div><span class="num">${aed(doneV)}</span><span>Finished, not yet invoiced</span></div>
+        <div><span class="num">${aed(lateV)}</span><span>On jobs past planned finish</span></div>
+      </div>
+    </div>
+    <div class="health">
+      <h4>Business health score</h4>
+      <div class="ring"><svg viewBox="0 0 86 86" role="img" aria-label="Health score ${sc} out of 100"><circle cx="43" cy="43" r="36" fill="none" stroke="rgba(255,255,255,.14)" stroke-width="8"/><circle cx="43" cy="43" r="36" fill="none" stroke="${sc>=75?'#fff':sc>=55?'#E2A23B':'#FF5757'}" stroke-width="8" stroke-linecap="round" stroke-dasharray="${ringC*sc/100} ${ringC}" transform="rotate(-90 43 43)"/></svg>
+        <div><span class="big num">${sc}</span><small>out of 100, rules-based</small></div></div>
+      <div class="sub-scores">${H.parts.map(p=>`<div><span>${p.k}</span><span class="bar"><i class="${scCls(p.v)}" style="width:${p.v}%"></i></span><span class="num">${Math.round(p.v)}</span></div>`).join('')}</div>
+      <details><summary>How this score is calculated</summary><p style="margin:6px 0 0">Order growth: YTD awards vs same period last year. Billing delivery: ${LASTM?mLong(LASTM):'last closed month'} actual ÷ plan. Schedule: share of live value not past planned finish. Client spread: penalises a top client above 20% of 2026 awards. Data hygiene: tracker issues per job line. Each 0–100, averaged.</p></details>
+    </div>
+  </section>
+  <div class="kpis">
+    ${kpi('Lifetime order value',{text:aed(life),title:full(life)},`${ps.length} job lines, ${new Set(ps.map(p=>p.cl)).size} clients`,'Sum of PO value for every job line in the register (filtered). Lines with PO value pending are excluded.')}
+    ${kpi(`Awarded YTD ${yr}`,{text:aed(cur),title:full(cur)},g!=null?`<span class="${g>=0?'up':'down'}">${g>=0?'▲':'▼'} ${pct(Math.abs(g))}</span> vs ${aed(prev)} same date ${yr-1}`:'','Job lines with LPO date between 1 Jan and 6 Oct, compared with the same window last year.')}
+    ${kpi('Unbilled backlog',{text:aed(unbV),title:full(unbV)},`${unbilled.length} lines open, in progress or completed`,'PO value of job lines with status Open PO, In progress or Work completed.')}
+    ${kpi('Earned, not billed',{text:aed(earned),title:full(earned)},`${pct(unbV?earned/unbV:0)} of backlog by progress`,'Backlog PO value × reported project %. An estimate of work done but not yet invoiced.')}
+    ${kpi(`Billing plan ${futRange()}`,{text:aed(q4),title:full(q4)},`<span class="down">${aed(q4risk)}</span> of it at risk`,'From the KHAN invoice plan. At risk = job below 50% progress, still at Open PO, or not found in the register.')}
+    ${kpi(`${LASTM?mLong(LASTM):'Last month'} billing`,{text:pct(sepAch,1),title:''},lastRun?`${aed(lastRun.act)} of ${aed(lastRun.plan)} planned`:'no closed month in plan','Last closed month: actual invoicing divided by plan in the invoice-plan sheet.')}
+  </div>
+  <div class="grid g-12">
+    ${panel('span-8',`Billing runway, ${MONTHS.length?MONTHS[0].l+' to '+MONTHS[MONTHS.length-1].l:'no plan months'}`,'Is the invoice plan backed by work that is far enough along to bill?',
+      `<div class="chart tall"><canvas id="cRun" role="img" aria-label="Stacked bar chart of billing plan by month split by confidence, with September actual"></canvas></div>
+       ${dataTable(['Month','Plan','Actual','High conf.','Medium','At risk'], run.map(r=>[r.m,full(r.plan),full(r.act),full(r.high),full(r.med),full(r.risk)]))}
+       <div class="take"><b>Read it this way:</b> dark is invoiced, blue is plan on jobs ≥85% complete, amber is 50–84%, red is below 50% or not started. The dashed line is the full plan. Anything red in ${mLong(CURM)||'the current month'} needs a decision this week: accelerate the job or re-phase the plan.</div>`,
+      `<button class="btn" onclick="go('billing')">Open billing</button>`)}
+    <section class="panel span-4"><div class="panel-head"><div><h3>What the owner should know</h3><div class="q">Generated from the filtered data</div></div></div>
+      <div class="tabs" role="group" aria-label="Insight type" id="insTabs"><button aria-pressed="true" data-t="r">Risks (${risks.length})</button><button aria-pressed="false" data-t="o">Opportunities (${opps.length})</button><button aria-pressed="false" data-t="i">Wins (${ins.length})</button></div>
+      <ul class="ins" id="insList" style="margin-top:14px"></ul>
+    </section>
+    ${panel('span-7','Order intake by year','How fast is the order book growing, and from which business line?',`<div class="chart"><canvas id="cYear" role="img" aria-label="Stacked column chart of order value by year and business line"></canvas></div>`)}
+    ${panel('span-5','Where the money sits today','Value by project status. Select a bar to filter.',`<div class="chart"><canvas id="cStage" role="img" aria-label="Bar chart of value by project status"></canvas></div>`)}
+  </div></div>`;
+  const lists = {r:risks,o:opps,i:ins};
+  const showIns = t => { $('#insList').innerHTML = lists[t].length ? lists[t].map(([c,ic,txt])=>`<li><span class="dot ${c}" aria-hidden="true">${ic}</span><span>${txt}</span></li>`).join('') : '<li><span></span><span>Nothing flagged for the current filters.</span></li>'; document.querySelectorAll('#insTabs button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.t===t)); };
+  document.querySelectorAll('#insTabs button').forEach(b=>b.addEventListener('click',()=>showIns(b.dataset.t))); showIns('r');
+  drawRunway('cRun', run);
+  drawYears('cYear', fP('yr'));
+  const stv = STAGES.map(s=>sum(ps.filter(p=>p.st===s),p=>p.v));
+  mk('cStage',{type:'bar',data:{labels:STAGES.map(s=>STAGE_LABEL[s]),datasets:[{label:'PO value',data:stv,backgroundColor:STAGES.map(s=>cssv(STAGE_VAR[s])),borderRadius:4}]},
+    options:barOpts({horizontal:true,legend:false,onClick:(e,els)=>{ if(els.length) setFilter('st',STAGES[els[0].index]); },
+      tipExtra:items=>{const s=STAGES[items[0].dataIndex]; return `${ps.filter(p=>p.st===s).length} job lines`;}})});
+}
+function drawRunway(id, run){
+  const isF = i => !run[i].past;
+  mk(id,{type:'bar',data:{labels:run.map(r=>r.m),datasets:[
+    {label:'Invoiced',data:run.map(r=>r.act),backgroundColor:cssv('--s-inv'),stack:'s',borderRadius:3},
+    {label:'Plan, high confidence',data:run.map((r,i)=>isF(i)?r.high:0),backgroundColor:cssv('--s-prog'),stack:'s',borderRadius:3},
+    {label:'Plan, medium',data:run.map((r,i)=>isF(i)?r.med:0),backgroundColor:cssv('--amber-fill'),stack:'s',borderRadius:3},
+    {label:'Plan, at risk',data:run.map((r,i)=>isF(i)?r.risk:0),backgroundColor:cssv('--brand'),stack:'s',borderRadius:3},
+    {label:'Full plan',lblPrefix:'Plan ',type:'line',data:run.map(r=>r.plan),borderColor:cssv('--ink'),borderDash:[5,4],borderWidth:1.5,pointRadius:5,pointStyle:'rectRot',pointBackgroundColor:cssv('--surface'),pointBorderColor:cssv('--ink'),fill:false,order:-1}
+  ]},options:{...barOpts({stacked:true}),plugins:{...barOpts().plugins,valueLabels:{totals:false},tooltip:{callbacks:{label:ctx=>ctx.parsed.y?`${ctx.dataset.label}: ${full(ctx.parsed.y)}`:null}}}}});
+}
+function drawYears(id, ps){
+  const yrs = [...new Set(ps.map(p=>p.yr))].sort();
+  const col = {'SERVICE':cssv('--s-inv'),'SUPPLY':cssv('--brand'),'SUPPLY/SERVICE':cssv('--s-open')};
+  const ds = GROUPS.map(gp=>({label:GROUP_LABEL[gp],data:yrs.map(y=>sum(ps.filter(p=>p.yr===y&&p.grp===gp),p=>p.v)),backgroundColor:col[gp],stack:'y',borderRadius:3}));
+  mk(id,{type:'bar',data:{labels:yrs.map(String),datasets:ds},options:barOpts({stacked:true,onClick:(e,els)=>{ if(els.length) setFilter('yr',String(yrs[els[0].index])); },
+    tipExtra:items=>{const y=yrs[items[0].dataIndex]; const t=sum(ps.filter(p=>p.yr===y),p=>p.v); const pv=sum(ps.filter(p=>p.yr===y-1),p=>p.v); return `Total ${full(t)}${pv?`  (${t>=pv?'+':''}${pct((t-pv)/pv)} vs ${y-1})`:''}`;}})});
+}
+
+/* ---------------- ORDERS ---------------- */
+function vOrders(){
+  const psY = fP('yr'), ps = fP();
+  if(!psY.length){ $('#view').innerHTML = emptyState('No orders match these filters','Widen the filters to see the order book.'); return; }
+  const yrs = [Y-2,Y-1,Y];
+  const cum = yrs.map(y=>{ let c=0; return Array.from({length:12},(_,m)=>{ if(y===Y && m>TODAY.getUTCMonth()) return null; c+=sum(psY.filter(p=>p.lpoD&&p.lpoD.getUTCFullYear()===y&&p.lpoD.getUTCMonth()===m),p=>p.v); return c; }); });
+  const bins = [[0,25e3,'<25K'],[25e3,50e3,'25–50K'],[50e3,1e5,'50–100K'],[1e5,25e4,'.1–.25M'],[25e4,5e5,'.25–.5M'],[5e5,1e6,'.5–1M'],[1e6,1e12,'>1M']];
+  const valued = ps.filter(p=>p.val!=null && p.val>0);
+  const bc = bins.map(b=>valued.filter(p=>p.val>=b[0]&&p.val<b[1]));
+  const cos = Object.entries(groupBy(ps,'co')).map(([k,a])=>({k,v:sum(a,p=>p.v),n:a.length})).sort((a,b)=>b.v-a.v).slice(0,10);
+  const avg = valued.length? sum(valued,p=>p.val)/valued.length : 0, med = median(valued.map(p=>p.val));
+  const big = valued.filter(p=>p.val>=1e6); const bigShare = sum(big,p=>p.val)/Math.max(1,sum(valued,p=>p.val));
+  const y26 = psY.filter(p=>p.lpoD&&p.lpoD.getUTCFullYear()===Y); const m26 = Array.from({length:TODAY.getUTCMonth()+1},(_,m)=>sum(y26.filter(p=>p.lpoD.getUTCMonth()===m),p=>p.v));
+  const bestM = m26.indexOf(Math.max(...m26)); const mNames=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  $('#view').innerHTML = `<div class="view grid g-12">
+    ${panel('span-12','Cumulative awards through the year',`Is ${Y} tracking ahead of prior years at the same point? (by LPO date; ignores the year filter)`,
+      `<div class="chart"><canvas id="cCum" role="img" aria-label="Cumulative order intake by month for the last three years"></canvas></div>
+       ${dataTable(['Month',...yrs.map(String)], mNames.map((m,i)=>[m,...cum.map(c=>c[i]==null?'—':full(c[i]))]))}
+       <div class="take"><b>Takeaway:</b> ${(()=>{const t24=cum[0][11]||0; const i=cum[2].findIndex(v=>v!=null&&v>=t24); return i>=0&&t24?`By ${mNames[i]}, ${Y} intake had already passed the whole of ${Y-2} (${aed(t24)}).`:`${Y} year-to-date stands at ${aed(cum[2].filter(v=>v!=null).pop()||0)}.`;})()} ${mNames[bestM]} was the strongest month of ${Y} at ${aed(m26[bestM])}. Last year booked ${aed(sum(P.filter(p=>p.lpoD&&p.lpoD.getUTCFullYear()===Y-1&&p.lpoD.getUTCMonth()>TODAY.getUTCMonth()),p=>p.v))} after this point in the year, so the remaining pipeline matters.</div>`)}
+    ${panel('span-7','Order value by year and business line','Select a column to focus the whole dashboard on that year.',`<div class="chart"><canvas id="cYear2" role="img" aria-label="Order value by year and business line"></canvas></div>`)}
+    ${panel('span-5','Deal size profile','How lumpy is the order book? Value by size of job line.',
+      `<div class="chart"><canvas id="cBins" role="img" aria-label="Order value by deal size band"></canvas></div>
+       <div class="mini-stats" style="margin-top:12px"><div><span class="num">${aed(avg)}</span><span>Average line</span></div><div><span class="num">${aed(med)}</span><span>Median line</span></div><div class="r"><span class="num">${pct(bigShare)}</span><span>Value in ${big.length} lines over 1M</span></div></div>`)}
+    ${panel('span-12','Principals and brands behind the work','Which partner relationships generate the order value? Select a bar to filter.',`<div class="chart"><canvas id="cCo" role="img" aria-label="Order value by principal or brand"></canvas></div>
+      <div class="take"><b>Takeaway:</b> ${esc(cos[0]?.k||'')} carries ${pct(cos[0]?cos[0].v/Math.max(1,sum(ps,p=>p.v)):0)} of value. Partner lines such as ${cos.slice(1,4).map(c=>esc(c.k)).join(', ')} are where diversification is coming from.</div>`)}
+  </div>`;
+  const cols = [cssv('--s-open'),cssv('--s-prog'),cssv('--brand')];
+  mk('cCum',{type:'line',data:{labels:mNames,datasets:yrs.map((y,i)=>({label:String(y),data:cum[i],labelIdx:y===Y?undefined:[cum[i].map((v,j)=>v==null?-1:j).filter(j=>j>=0).pop()],borderColor:cols[i],backgroundColor:cols[i],borderWidth:y===Y?3:2,pointRadius:y===Y?3:0,tension:0,spanGaps:false,borderDash:y===Y-2?[4,4]:[]}))},
+    options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},scales:{y:{beginAtZero:true,ticks:{callback:aedTick},grid:{color:cssv('--rule')},border:{display:false}},x:{grid:{display:false}}},plugins:{legend:{position:'bottom',align:'start'},tooltip:{callbacks:{label:ctx=>ctx.parsed.y==null?null:`${ctx.dataset.label}: ${full(ctx.parsed.y)}`}}}}});
+  drawYears('cYear2', psY);
+  mk('cBins',{type:'bar',data:{labels:bins.map((b,i)=>[b[2],bc[i].length+' lines']),datasets:[{label:'Value',data:bc.map(a=>sum(a,p=>p.val)),backgroundColor:bins.map((b,i)=>i>=5?cssv('--brand'):cssv('--s-inv')),borderRadius:3}]},
+    options:barOpts({legend:false,tipExtra:items=>`${bc[items[0].dataIndex].length} job lines`})});
+  mk('cCo',{type:'bar',data:{labels:cos.map(c=>c.k),datasets:[{label:'Order value',data:cos.map(c=>c.v),backgroundColor:cos.map((c,i)=>i===0?cssv('--s-inv'):cssv('--s-prog')),borderRadius:3}]},
+    options:barOpts({horizontal:true,legend:false,onClick:(e,els)=>{if(els.length) setFilter('co',cos[els[0].index].k);},tipExtra:items=>`${cos[items[0].dataIndex].n} job lines`})});
+}
+
+/* ---------------- BILLING ---------------- */
+let W = {high:90,med:65,risk:30};
+function vBilling(){
+  const vs = fV();
+  if(!MONTHS.length){ $('#view').innerHTML = '<div class="empty"><b>No plan months found</b>convert.py did not find any “MONTH YEAR PLANNED / ACTUAL” columns in the invoice-plan sheet.</div>'; return; }
+  if(!vs.length){ $('#view').innerHTML = emptyState('No invoice-plan lines match','The billing view responds to business line, client, principal, engineer and search.'); return; }
+  const run = billingRunway(vs);
+  const tot = sum(vs,v=>v.amt||0), raised = sum(vs,v=>v.raised||0), bal = sum(vs,v=>v.bal||0);
+  const open = vs.filter(v=>(v.bal||0)>0);
+  const byCl = Object.entries(groupBy(open,'cl')).map(([k,a])=>({k,v:sum(a,x=>x.bal)})).sort((a,b)=>b.v-a.v).slice(0,10);
+  const ages = [['Overdue to bill',v=>v.imD&&v.imD<AS_MS], ...FUTM.slice(0,3).map(m=>[m.l, v=>v.imD&&v.imD>=m.s&&v.imD<Date.UTC(new Date(m.s).getUTCFullYear(),new Date(m.s).getUTCMonth()+1,1)]), ['Later', v=>v.imD&&v.imD>=(FUTM[3]?FUTM[3].s:FUTM.length?Date.UTC(new Date(FUTM[FUTM.length-1].s).getUTCFullYear(),new Date(FUTM[FUTM.length-1].s).getUTCMonth()+1,1):AS_MS)], ['No month set', v=>!v.imD]];
+  const ageV = ages.map(([l,f])=>({l,a:open.filter(f)}));
+  const q = run.slice(1);
+  const H_ = sum(q,r=>r.high), M_ = sum(q,r=>r.med), R_ = sum(q,r=>r.risk);
+  const sched = vs.filter(v=>FUTM.some(m=>v.plan[m.i])).sort((a,b)=>{ for(const m of FUTM){ const d=b.plan[m.i]-a.plan[m.i]; if(d) return d; } return 0; });
+  const restM = FUTM.slice(1), restPlan = runSum(run,restM,'plan'), restRisk = runSum(run,restM,'risk');
+  $('#view').innerHTML = `<div class="view">
+  <div class="kpis">
+    ${kpi('Invoice value tracked',{text:aed(tot),title:full(tot)},`${vs.length} lines in the plan`,'Sum of INVOICE AMOUNT in the KHAN sheet.')}
+    ${kpi('Invoiced to date',{text:aed(raised),title:full(raised)},`${pct(tot?raised/tot:0)} of tracked value`)}
+    ${kpi('Balance to invoice',{text:aed(bal),title:full(bal)},`${open.length} lines open`)}
+    ${kpi(LASTM?mLong(LASTM):'Last closed month',{text:LASTM?pct(run[LASTM.i].plan?run[LASTM.i].act/run[LASTM.i].plan:null,1):'—'},LASTM?`${aed(run[LASTM.i].act)} of ${aed(run[LASTM.i].plan)}`:'')}
+    ${kpi(CURM?`${mLong(CURM)} plan`:'Current month',{text:CURM?aed(run[CURM.i].plan):'—'},CURM?`<span class="down">${aed(run[CURM.i].risk)}</span> at risk`+(run[CURM.i].act?`, ${aed(run[CURM.i].act)} invoiced so far`:''):'')}
+    ${kpi(restM.length?`${restM.map(mShort).join(' + ')} plan`:'Later months',{text:aed(restPlan),title:full(restPlan)},`<span class="down">${aed(restRisk)}</span> at risk`)}
+  </div>
+  <div class="grid g-12">
+    ${panel('span-8','Billing runway by confidence','Plan for each month split by how far along the underlying job is.',`<div class="chart tall"><canvas id="cRun2" role="img" aria-label="Billing plan by month and confidence"></canvas></div>`)}
+    ${panel('span-4',`What-if: risk-adjusted billing, ${futRange()}`,'Set the share of each confidence band you expect to invoice on time.',
+      `<div class="whatif">
+        <div class="wi-row"><label for="wH">High confidence <small style="display:block;color:var(--muted)">${aed(H_)}</small></label><input id="wH" type="range" min="0" max="100" value="${W.high}"><span class="num" id="wHv">${W.high}%</span></div>
+        <div class="wi-row"><label for="wM">Medium <small style="display:block;color:var(--muted)">${aed(M_)}</small></label><input id="wM" type="range" min="0" max="100" value="${W.med}"><span class="num" id="wMv">${W.med}%</span></div>
+        <div class="wi-row"><label for="wR">At risk <small style="display:block;color:var(--muted)">${aed(R_)}</small></label><input id="wR" type="range" min="0" max="100" value="${W.risk}"><span class="num" id="wRv">${W.risk}%</span></div>
+        <div class="wi-out"><div><span class="num" id="wiE"></span><span>Expected ${futRange()} billing</span></div><div><span class="num down" id="wiG"></span><span>Gap to plan</span></div></div>
+        <div class="take" style="margin-top:0">Defaults (90 / 65 / 30%) are planning assumptions, not history. Calibrate them with ${LASTM?'the '+mLong(LASTM):'the last'} outcome and the project team's view.</div>
+      </div>`)}
+    ${panel('span-6','Balance to invoice by client','Who owes the most invoicing? Select a bar to filter.',`<div class="chart"><canvas id="cBalCl" role="img" aria-label="Balance to invoice by client"></canvas></div>`)}
+    ${panel('span-6','Balance to invoice by planned invoice month','How much should already have been billed?',
+      `<div class="chart"><canvas id="cAge" role="img" aria-label="Balance to invoice by invoice month bucket"></canvas></div>
+       <div class="take"><b>${aed(sum(ageV[0].a,v=>v.bal))}</b> sits in months that have already closed (${ageV[0].a.length} lines). ${ageV[0].a.length?`Largest: ${esc(ageV[0].a.sort((a,b)=>b.bal-a.bal)[0].ds.slice(0,60))} (${esc(ageV[0].a[0].cl)}), ${aed(ageV[0].a[0].bal)}.`:''}</div>`)}
+    ${panel('span-12',`Invoice schedule, ${futRange()}`,'Each planned invoice with the live status of its job. Select a row for the full job record.',
+      `<div class="tabs" role="group" aria-label="Month" id="mTabs">${['all',...FUTM.map(m=>String(m.i))].map((m,i)=>`<button data-m="${m}" aria-pressed="${i===0}">${m==='all'?'All months':MONTHS[+m].l}</button>`).join('')}</div>
+       <div class="tbl-wrap" style="margin-top:12px;max-height:520px;overflow:auto"><table><thead><tr><th>SO / job</th><th>Client</th><th>Job status</th><th>Progress</th><th>Confidence</th>${FUTM.map(m=>`<th class="r">${mShort(m)}</th>`).join('')}</tr></thead><tbody id="schedBody"></tbody></table></div>`)}
+  </div></div>`;
+  drawRunway('cRun2', run);
+  const upd = () => { W={high:+$('#wH').value,med:+$('#wM').value,risk:+$('#wR').value}; $('#wHv').textContent=W.high+'%'; $('#wMv').textContent=W.med+'%'; $('#wRv').textContent=W.risk+'%';
+    const e = H_*W.high/100 + M_*W.med/100 + R_*W.risk/100; $('#wiE').textContent=aed(e); $('#wiE').title=full(e); $('#wiG').textContent='−'+aed(H_+M_+R_-e).replace('AED ','AED '); };
+  ['#wH','#wM','#wR'].forEach(s=>$(s).addEventListener('input',upd)); upd();
+  mk('cBalCl',{type:'bar',data:{labels:byCl.map(c=>c.k),datasets:[{label:'Balance to invoice',data:byCl.map(c=>c.v),backgroundColor:cssv('--s-inv'),borderRadius:3}]},options:barOpts({horizontal:true,legend:false,onClick:(e,els)=>{if(els.length) setFilter('cl',byCl[els[0].index].k);}})});
+  mk('cAge',{type:'bar',data:{labels:ageV.map(a=>a.l),datasets:[{label:'Balance',data:ageV.map(a=>sum(a.a,v=>v.bal)),backgroundColor:ageV.map((a,i)=>i===0?cssv('--brand'):cssv('--s-open')),borderRadius:3}]},options:barOpts({legend:false,tipExtra:items=>`${ageV[items[0].dataIndex].a.length} lines`})});
+  const drawSched = m => {
+    const rows = sched.filter(v=>m==='all'||v.plan[+m]>0);
+    $('#schedBody').innerHTML = rows.length ? rows.map(v=>`<tr class="click" data-vi="${vs.indexOf(v)}" tabindex="0"><td class="desc"><b>${esc(v.so||'No SO')}</b><small>${esc(v.ds)}</small></td><td>${esc(v.cl)}</td><td>${v.st?pill(v.st):'<span class="pill p-risk">Not in register</span>'}</td><td>${v.pct!=null?progBar(v.pct):'—'}</td><td><span class="pill ${CONF_CLS[v.conf]}">${CONF_LABEL[v.conf]}</span></td>${FUTM.map(mm=>`<td class="r num" title="${v.plan[mm.i]?full(v.plan[mm.i]):''}">${v.plan[mm.i]?short(v.plan[mm.i]):''}</td>`).join('')}</tr>`).join('') : `<tr><td colspan="${5+FUTM.length}"><div class="empty">No invoices planned for this month.</div></td></tr>`;
+    $('#schedBody').querySelectorAll('tr.click').forEach(tr=>{ const open=()=>{const p=vs[+tr.dataset.vi].proj; if(p) openDrawer(p); else toast('This invoice line has no matching job in the register.');}; tr.addEventListener('click',open); tr.addEventListener('keydown',e=>{if(e.key==='Enter') open();}); });
+    document.querySelectorAll('#mTabs button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.m===m));
+  };
+  document.querySelectorAll('#mTabs button').forEach(b=>b.addEventListener('click',()=>drawSched(b.dataset.m))); drawSched('all');
+  exportRows = () => ({name:'mge-invoice-plan.csv', head:['SO','Description','Client','Business line','PO number','PO value','Invoice month',...MONTHS.flatMap(m=>[m.l+' plan',m.l+' actual']),'Invoice amount','Raised','Balance','Payment status','Job status','Progress','Confidence'],
+    rows: vs.map(v=>[v.so,v.ds,v.cl,v.grp,v.pon,v.po,v.im,...MONTHS.flatMap(m=>[v.plan[m.i],v.act[m.i]]),v.amt,v.raised,v.bal,v.pay,v.st||'',v.pct!=null?v.pct:'',CONF_LABEL[v.conf]])});
+}
+
+/* ---------------- DELIVERY ---------------- */
+let ganttAll = false;
+function vDelivery(){
+  const ps = fP(); const live = ps.filter(p=>p.st==='OPEN PO'||p.st==='IN PROGRESS'||p.st==='WORK COMPLETED');
+  if(!live.length){ $('#view').innerHTML = emptyState('No live jobs for these filters','Live jobs are those at Open PO, In progress or Work completed.'); return; }
+  const late = live.filter(p=>p.late).sort((a,b)=>b.v-a.v);
+  const inProg = live.filter(p=>p.st==='IN PROGRESS');
+  const _lead = median(ps.filter(p=>p.lpoD&&p.asD).map(p=>(p.asD-p.lpoD)/DAY).filter(d=>d>=0&&d<730));
+  const dur = median(ps.filter(p=>p.asD&&p.afD).map(p=>(p.afD-p.asD)/DAY).filter(d=>d>=0&&d<730));
+  const slipArr = ps.filter(p=>p.afD&&p.pfD).map(p=>(p.afD-p.pfD)/DAY);
+  const onTime = slipArr.length? slipArr.filter(d=>d<=0).length/slipArr.length : null;
+  const agingB = [[0,30,'0–30 days'],[30,90,'1–3 mo'],[90,180,'3–6 mo'],[180,365,'6–12 mo'],[365,1e5,'12+ mo']];
+  const openLive = live.filter(p=>p.st!=='WORK COMPLETED' && p.lpoD);
+  const aging = agingB.map(b=>openLive.filter(p=>{const d=(TODAY-p.lpoD)/DAY; return d>=b[0]&&d<b[1];}));
+  // gantt
+  const g = live.filter(p=>p.psD&&p.pfD).sort((a,b)=>a.pfD-b.pfD);
+  const gShow = ganttAll ? g : [...g].sort((a,b)=>b.v-a.v).slice(0,20).sort((a,b)=>a.pfD-b.pfD);
+  const minD = Date.UTC(Y, TODAY.getUTCMonth()-9, 1), maxD = Date.UTC(Y, TODAY.getUTCMonth()+10, 1); const span = maxD-minD;
+  const X = d => Math.max(0,Math.min(100,(d-minD)/span*100));
+  const ticks=[]; for(let k=0; Date.UTC(Y,TODAY.getUTCMonth()-9+k,1)<maxD; k+=2) ticks.push(Date.UTC(Y,TODAY.getUTCMonth()-9+k,1));
+  const mN=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  $('#view').innerHTML = `<div class="view">
+  <div class="kpis">
+    ${kpi('Live job lines',{text:n0(live.length)},`${aed(sum(live,p=>p.v))} in value`)}
+    ${kpi('In progress',{text:n0(inProg.length)},`avg ${pct(inProg.length?sum(inProg,p=>p.pct)/inProg.length:0)} complete`)}
+    ${kpi('Past planned finish',{text:`<span class="${late.length?'down':''}">${late.length}</span>`},`${aed(sum(late,p=>p.v))} exposed`,`Open PO or In progress with planned finish date before ${fmtDate(TODAY)}.`)}
+    ${kpi('Average days over',{text:late.length?Math.round(sum(late,p=>p.daysLate)/late.length)+' days':'—'},late.length?`worst: ${Math.max(...late.map(p=>p.daysLate))} days`:'no late jobs','Average days past planned finish across live jobs that are late.')}
+    ${kpi('Typical job duration',{text:dur!=null?Math.round(dur)+' days':'—'},'median, actual start to finish')}
+    ${kpi('Finished on or before plan',{text:pct(onTime)},`${slipArr.length} completed jobs measured`,'Actual finish ≤ planned finish. See the data quality note: planned dates appear to be overwritten with actuals on many rows, which flatters this figure.')}
+  </div>
+  <div class="grid g-12">
+    ${panel('span-12','Live job timeline','Planned start to planned finish. The blue fill is reported progress; a red outline means the job is past its planned finish. Select a row for detail.',
+      `<div class="gantt"><div class="g-inner">
+        <div class="g-head"><div class="g-lbl" style="padding-top:6px">Job</div><div class="g-track">${ticks.map(t=>`<span class="g-tick" style="left:${X(t)}%">${mN[new Date(t).getUTCMonth()]} ${String(new Date(t).getUTCFullYear()).slice(2)}</span>`).join('')}<span class="g-today" style="left:${X(+TODAY)}%"><span class="g-tl">Report date</span></span></div></div>
+        ${gShow.map(p=>`<div class="g-row" data-id="${p.id}" tabindex="0" role="button" aria-label="${esc(p.ds)}, ${STAGE_LABEL[p.st]}, ${Math.round(p.pct*100)}% complete, planned finish ${fmtDate(p.pfD)}"><div class="g-lbl"><b title="${esc(p.ds)}">${esc(p.ds)}</b><small>${esc(p.cl)}, ${aed(p.val)}, ${esc(p.pe||'—')}</small></div>
+          <div class="g-track"><span class="g-today" style="left:${X(+TODAY)}%"></span>${p.psD>maxD?`<span style="position:absolute;right:8px;top:9px;font-size:11.5px;color:var(--muted)">Starts ${fmtDate(p.psD)} →</span>`:''}<div class="g-bar ${p.late?'late':''} ${p.st==='WORK COMPLETED'?'done':''}" style="left:${X(+p.psD)}%;width:${Math.max(0.6,X(+p.pfD)-X(+p.psD))}%;${p.psD>maxD?'display:none':''}" title="${fmtDate(p.psD)} to ${fmtDate(p.pfD)}${p.pfD>maxD?' (continues beyond chart)':''}">${p.st==='WORK COMPLETED'?'':`<i style="width:${Math.round(p.pct*100)}%"></i>`}</div></div></div>`).join('')}
+      </div></div>
+      <div class="legend"><span><i style="background:var(--s-open)"></i>Planned window</span><span><i style="background:var(--s-prog)"></i>Progress</span><span><i style="background:var(--s-done)"></i>Work completed</span><span><i style="outline:2px solid var(--brand);background:var(--surface)"></i>Past planned finish</span><span><i style="border-left:2px dashed var(--brand);width:0;border-radius:0"></i>Report date, ${fmtDate(TODAY)}</span></div>
+      <div style="margin-top:12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap"><button class="btn" id="gToggle">${ganttAll?'Show top 20 by value':`Show all ${g.length} jobs`}</button><span style="font-size:12px;color:var(--muted)">${live.length-g.length} live lines without planned dates are not drawn.</span></div>`)}
+    ${panel('span-7','Jobs past their planned finish',`Biggest exposure first, with the ${WEEK.cur} site note.`,
+      late.length?`<div class="tbl-wrap" style="max-height:440px;overflow:auto"><table><thead><tr><th>Job</th><th class="r">Value</th><th class="r">Days over</th><th>Progress</th><th>${WEEK.cur} note</th></tr></thead><tbody>${late.map(p=>`<tr class="click" data-id="${p.id}" tabindex="0"><td class="desc"><b>${esc(p.so||'—')}</b><small>${esc(p.ds)} · ${esc(p.cl)}</small></td><td class="r num">${short(p.val)}</td><td class="r num down">${p.daysLate}</td><td>${progBar(p.pct)}</td><td style="min-width:200px;font-size:12.5px">${esc(p.note||p.note40||'No update recorded')}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty"><b>Nothing late</b>Every live job is within its planned finish date.</div>')}
+    ${panel('span-5','How long open jobs have waited since LPO','Open PO and In progress lines by age of the LPO.',`<div class="chart"><canvas id="cAging" role="img" aria-label="Open job value by LPO age"></canvas></div>
+      <div class="take">${aging[4].length?`<b>${aging[4].length} lines worth ${aed(sum(aging[4],p=>p.v))}</b> have been open for more than a year. Each needs a clear owner and a close or cancel decision.`:'No line has been open for more than a year.'}</div>`)}
+  </div></div>`;
+  $('#gToggle').addEventListener('click',()=>{ganttAll=!ganttAll; vDelivery();});
+  bindRows();
+  mk('cAging',{type:'bar',data:{labels:agingB.map(b=>b[2]),datasets:[{label:'Open value',data:aging.map(a=>sum(a,p=>p.v)),backgroundColor:aging.map((a,i)=>i>=3?cssv('--brand'):cssv('--s-prog')),borderRadius:3}]},options:barOpts({legend:false,tipExtra:items=>`${aging[items[0].dataIndex].length} job lines`})});
+  exportRows = () => regExport(live, 'mge-live-jobs.csv');
+}
+function bindRows(){
+  document.querySelectorAll('[data-id]').forEach(el=>{ const open=()=>openDrawer(P.find(p=>p.id===+el.dataset.id)); el.addEventListener('click',open); el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();open();}}); });
+}
+
+/* ---------------- CLOSE-OUT ---------------- */
+function vCloseout(){
+  const ps = fP();
+  const done = ps.filter(p=>p.st==='WORK COMPLETED').sort((a,b)=>b.v-a.v);
+  const svc = ps.filter(p=>p.grp!=='SUPPLY' && p.yr>=Y-1 && (p.afD || p.st==='WORK COMPLETED' || p.st==='INVOICED'));
+  const steps = [['Work finished',svc],['Final report issued',svc.filter(p=>p.repOk)],['WCC submitted',svc.filter(p=>p.wsOk)],['WCC approved',svc.filter(p=>p.waOk)],['Service entry created',svc.filter(p=>p.seOk)],['Invoice number recorded',svc.filter(p=>p.invOk)]];
+  const dd = (a,b) => median(ps.filter(p=>isD(p[a])&&isD(p[b])).map(p=>(pd(p[b])-pd(p[a]))/DAY).filter(d=>d>=0&&d<365));
+  const t1 = dd('af','ws'), t2 = dd('ws','wa'), t3 = dd('wa','sed');
+  const noInv = ps.filter(p=>p.st==='INVOICED'&&!p.invOk), jcOpen = ps.filter(p=>p.st==='INVOICED'&&p.jc==='OPEN');
+  const pendVal = done.filter(p=>p.val==null);
+  $('#view').innerHTML = `<div class="view">
+  <div class="kpis">
+    ${kpi('Finished, not invoiced',{text:aed(sum(done,p=>p.v)),title:full(sum(done,p=>p.v))},`${done.length} lines at Work completed`)}
+    ${kpi('Without a PO value',{text:n0(pendVal.length)},'completed lines that cannot be invoiced yet')}
+    ${kpi('Finish → WCC submitted',{text:t1!=null?Math.round(t1)+' days':'—'},'median')}
+    ${kpi('WCC submitted → approved',{text:t2!=null?Math.round(t2)+' days':'—'},'median, client side')}
+    ${kpi('WCC approved → service entry',{text:t3!=null?Math.round(t3)+' days':'—'},'median, client side')}
+    ${kpi('Invoiced, no invoice no.',{text:`<span class="${noInv.length?'warnt':''}">${noInv.length}</span>`},'audit trail gap')}
+  </div>
+  <div class="grid g-12">
+    ${panel('span-6',`Close-out pipeline, service jobs ${Y-1}–${String(Y).slice(2)}`,'Where does paperwork stall between finishing a job and getting paid?',
+      `<div class="funnel">${steps.map(([l,a],i)=>`<div class="f-row"><span>${l}</span><div class="f-bar"><i style="width:${svc.length?a.length/svc.length*100:0}%;background-color:${i===0?'var(--s-inv)':i===5?'var(--green)':'var(--s-prog)'}"></i>${a.length?`<b>${aed(sum(a,p=>p.v))}</b>`:''}</div><span class="r num">${a.length} <small style="color:var(--muted)">(${pct(svc.length?a.length/svc.length:0)})</small></span></div>`).join('')}</div>
+       <div class="take"><b>Reading it:</b> the gap between “Work finished” and “WCC submitted” is the part MGE controls. Gaps after that are client-side and need follow-up, not engineering time. Some older rows record documents as “-”, so steps may read lower than reality.</div>`)}
+    ${panel('span-6','Ready to bill now','Work completed lines, largest first. Select a row for the full record.',
+      done.length?`<div class="tbl-wrap" style="max-height:420px;overflow:auto"><table><thead><tr><th>Job</th><th class="r">Value</th><th>Report</th><th>WCC</th><th>Note</th></tr></thead><tbody>${done.map(p=>`<tr class="click" data-id="${p.id}" tabindex="0"><td class="desc"><b>${esc(p.so||'—')}</b><small>${esc(p.ds)} · ${esc(p.cl)}</small></td><td class="r num">${p.val!=null?short(p.val):'<span class="warnt">PO pending</span>'}</td><td>${p.repOk?'✓':'<span class="warnt">Missing</span>'}</td><td>${p.waOk?'Approved':p.wsOk?'Submitted':'<span class="warnt">Not yet</span>'}</td><td style="font-size:12.5px;min-width:160px">${esc(p.note||p.note40||'')}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty"><b>Nothing waiting</b>No lines are at Work completed for these filters.</div>')}
+    ${panel('span-12','Control gaps in the invoicing record','These do not lose money directly, but they make billing hard to audit and easy to miss.',
+      `<div class="mini-stats"><div class="a"><span class="num">${noInv.length}</span><span>Lines marked Invoiced with no invoice number (worth ${aed(sum(noInv,p=>p.v))})</span></div><div class="a"><span class="num">${jcOpen.length}</span><span>Job cards still Open after invoicing</span></div><div class="r"><span class="num">${V.filter(v=>!v.pay).length}</span><span>Invoice-plan lines with no payment status</span></div><div class="b"><span class="num">0</span><span>Lines with a past-due age recorded</span></div></div>
+       <div class="take"><b>Recommendation:</b> add invoice date, due date and amount received to the KHAN sheet. With those three fields this dashboard can show receivables ageing and DSO, which is the number a lender or investor will ask for first.</div>`)}
+  </div></div>`;
+  bindRows();
+  exportRows = () => regExport(done, 'mge-ready-to-bill.csv');
+}
+
+/* ---------------- CLIENTS ---------------- */
+function vClients(){
+  const ps = fP(); const psAll = fP('yr');
+  if(!ps.length){ $('#view').innerHTML = emptyState('No clients match','Widen the filters.'); return; }
+  const tot = sum(ps,p=>p.v);
+  const cl = Object.entries(groupBy(ps,'cl')).map(([k,a])=>{ const all=psAll.filter(p=>p.cl===k); return {k, v:sum(a,p=>p.v), n:a.length, unb:sum(a.filter(p=>p.active),p=>p.v),
+    y25:sum(all.filter(p=>p.yr===Y-1),p=>p.v), y26:sum(all.filter(p=>p.yr===Y),p=>p.v), last:Math.max(0,...all.map(p=>p.lpoD?+p.lpoD:0))}; }).sort((a,b)=>b.v-a.v);
+  let c=0; cl.forEach(x=>{c+=x.v; x.cum=tot?c/tot:0;});
+  const top = cl.slice(0,15);
+  const hhi = sum(cl,x=>Math.pow(x.v/Math.max(1,tot)*100,2));
+  const n80 = cl.findIndex(x=>x.cum>=0.8)+1;
+  $('#view').innerHTML = `<div class="view">
+  <div class="kpis">
+    ${kpi('Active clients',{text:n0(cl.length)},'with at least one job line')}
+    ${kpi('Largest client share',{text:pct(cl[0].v/tot)},esc(cl[0].k))}
+    ${kpi('Top 3 share',{text:pct(sum(cl.slice(0,3),x=>x.v)/tot)},cl.slice(0,3).map(x=>esc(x.k)).join(', '))}
+    ${kpi('Clients making 80% of value',{text:n0(n80)},`of ${cl.length}`)}
+    ${kpi('Concentration index',{text:n0(hhi)},hhi>2500?'<span class="down">Highly concentrated</span>':hhi>1500?'<span class="warnt">Moderately concentrated</span>':'<span class="up">Diversified</span>','Herfindahl-Hirschman index on client value share. Above 2,500 is highly concentrated.')}
+    ${kpi('Average value per client',{text:aed(tot/cl.length)},'filtered period')}
+  </div>
+  <div class="grid g-12">
+    ${panel('span-12','Client Pareto','Bars: order value. Line: cumulative share of total. Select a bar to filter the dashboard to that client.',`<div class="chart tall"><canvas id="cPar" role="img" aria-label="Pareto chart of client order value"></canvas></div>`)}
+    ${panel('span-12','Client book',`${Y-1} vs ${Y} awards, open backlog and the last time each client placed an order. Red dates mean no order in 9+ months.`,
+      `<div class="tbl-wrap" style="max-height:520px;overflow:auto"><table><thead><tr><th>Client</th><th class="r">Value (filtered)</th><th class="r">Share</th><th class="r">Lines</th><th class="r">${Y-1}</th><th class="r">${Y}</th><th class="r">Open backlog</th><th>Last LPO</th></tr></thead><tbody>${cl.map(x=>{const stale=x.last&&(TODAY-x.last)/DAY>270; return `<tr class="click" data-cl="${esc(x.k)}" tabindex="0"><td><b>${esc(x.k)}</b></td><td class="r num">${short(x.v)}</td><td class="r">${pct(x.v/tot,1)}</td><td class="r">${x.n}</td><td class="r num">${x.y25?short(x.y25):'—'}</td><td class="r num">${x.y26?short(x.y26):'—'}${x.y25&&x.y26?` <small class="${x.y26>=x.y25?'up':'down'}">${x.y26>=x.y25?'▲':'▼'}</small>`:''}</td><td class="r num">${x.unb?short(x.unb):'—'}</td><td class="${stale?'down':''}">${x.last?fmtDate(new Date(x.last)):'—'}</td></tr>`;}).join('')}</tbody></table></div>`)}
+  </div></div>`;
+  mk('cPar',{type:'bar',data:{labels:top.map(x=>x.k),datasets:[
+    {label:'Order value',data:top.map(x=>x.v),backgroundColor:top.map((x,i)=>i===0?cssv('--brand'):cssv('--s-inv')),borderRadius:3,yAxisID:'y'},
+    {label:'Cumulative share',lbl:'pct',type:'line',data:top.map(x=>x.cum*100),borderColor:cssv('--s-prog'),backgroundColor:cssv('--s-prog'),pointRadius:3,yAxisID:'y1',tension:0}]},
+    options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},onClick:(e,els)=>{if(els.length) setFilter('cl',top[els[0].index].k);},
+      scales:{y:{beginAtZero:true,ticks:{callback:aedTick},grid:{color:cssv('--rule')},border:{display:false}},y1:{position:'right',min:0,max:100,ticks:{callback:v=>v+'%'},grid:{display:false},border:{display:false}},x:{grid:{display:false},ticks:{maxRotation:45,minRotation:0}}},
+      plugins:{legend:{position:'bottom',align:'start'},tooltip:{callbacks:{label:ctx=>ctx.dataset.yAxisID==='y1'?`Cumulative: ${ctx.parsed.y.toFixed(1)}%`:`Order value: ${full(ctx.parsed.y)}`}}}}});
+  document.querySelectorAll('tr[data-cl]').forEach(tr=>{const f=()=>setFilter('cl',tr.dataset.cl); tr.addEventListener('click',f); tr.addEventListener('keydown',e=>{if(e.key==='Enter')f();});});
+}
+
+/* ---------------- TEAM ---------------- */
+function vTeam(){
+  const ps = fP().filter(p=>p.pe);
+  if(!ps.length){ $('#view').innerHTML = emptyState('No engineer data','No job lines with a project engineer match these filters.'); return; }
+  const eng = Object.entries(groupBy(ps,'pe')).map(([k,a])=>{ const live=a.filter(p=>p.st==='OPEN PO'||p.st==='IN PROGRESS'); const ip=a.filter(p=>p.st==='IN PROGRESS');
+    return {k,n:a.length,v:sum(a,p=>p.v),live:live.length,liveV:sum(live,p=>p.v),late:live.filter(p=>p.late).length,lateV:sum(live.filter(p=>p.late),p=>p.v),done:a.filter(p=>p.st==='WORK COMPLETED').length,avg:ip.length?sum(ip,p=>p.pct)/ip.length:null,y26:sum(a.filter(p=>p.yr===Y),p=>p.v),a}; }).sort((a,b)=>b.liveV-a.liveV);
+  const se = Object.entries(groupBy(ps.filter(p=>p.se&&(p.st==='IN PROGRESS'||p.st==='OPEN PO')),'se')).map(([k,a])=>({k,n:a.length,v:sum(a,p=>p.v)})).sort((a,b)=>b.n-a.n);
+  const maxH = Math.max(1,...eng.flatMap(e=>STAGES.map(s=>e.a.filter(p=>p.st===s).length)));
+  $('#view').innerHTML = `<div class="view grid g-12">
+    ${panel('span-7','Live workload by project engineer','Open PO and In progress value per engineer, with the part that is past planned finish. Select a bar to filter.',`<div class="chart tall"><canvas id="cEng" role="img" aria-label="Live workload by project engineer"></canvas></div>`)}
+    ${panel('span-5','Site load by service engineer','Live job lines assigned on site.',`<div class="chart tall"><canvas id="cSe" role="img" aria-label="Live job lines by service engineer"></canvas></div>`)}
+    ${panel('span-12','Engineer scorecard','All-time lines in the filtered set. Shading shows how many lines sit in each status.',
+      `<div class="tbl-wrap"><table class="heat"><thead><tr><th style="text-align:left">Project engineer</th>${STAGES.map(s=>`<th>${STAGE_LABEL[s]}</th>`).join('')}<th>Avg progress (in progress)</th><th class="r">Live value</th><th class="r">Late lines</th><th class="r">${Y} awards</th></tr></thead><tbody>${eng.map(e=>`<tr class="click" data-pe="${esc(e.k)}" tabindex="0"><td style="text-align:left"><b>${esc(titleCase(e.k))}</b></td>${STAGES.map(s=>{const c=e.a.filter(p=>p.st===s).length; return `<td style="background:color-mix(in srgb,var(${STAGE_VAR[s]}) ${c?Math.round(10+c/maxH*32):0}%,transparent)">${c||''}</td>`;}).join('')}<td>${e.avg!=null?pct(e.avg):'—'}</td><td class="r num">${e.liveV?short(e.liveV):'—'}</td><td class="r ${e.late?'down':''}">${e.late||''}</td><td class="r num">${e.y26?short(e.y26):'—'}</td></tr>`).join('')}</tbody></table></div>
+       <div class="take"><b>Takeaway:</b> ${esc(titleCase(eng[0].k))} holds ${pct(eng[0].liveV/Math.max(1,sum(eng,e=>e.liveV)))} of live value${eng[0].late?` and ${eng[0].late} late lines`:''}. When one engineer owns this much, a single absence delays billing; consider a named deputy on the largest jobs.</div>`)}
+  </div>`;
+  const top = eng.filter(e=>e.liveV>0);
+  mk('cEng',{type:'bar',data:{labels:top.map(e=>titleCase(e.k)),datasets:[{label:'On schedule',data:top.map(e=>e.liveV-e.lateV),backgroundColor:cssv('--s-prog'),stack:'e',borderRadius:3},{label:'Past planned finish',data:top.map(e=>e.lateV),backgroundColor:cssv('--brand'),stack:'e',borderRadius:3}]},
+    options:barOpts({horizontal:true,stacked:true,onClick:(e,els)=>{if(els.length) setFilter('pe',top[els[0].index].k);},tipExtra:items=>{const e=top[items[0].dataIndex]; return `${e.live} live lines, ${e.late} late`;}})});
+  mk('cSe',{type:'bar',data:{labels:se.map(s=>titleCase(s.k)),datasets:[{label:'Live lines',lbl:'int',data:se.map(s=>s.n),backgroundColor:cssv('--s-inv'),borderRadius:3}]},
+    options:{...barOpts({horizontal:true,legend:false}),scales:{x:{beginAtZero:true,ticks:{precision:0},grid:{color:cssv('--rule')}},y:{grid:{display:false}}},plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`${ctx.parsed.x} live lines, ${full(se[ctx.dataIndex].v)}`}}}}});
+  document.querySelectorAll('tr[data-pe]').forEach(tr=>{const f=()=>setFilter('pe',tr.dataset.pe); tr.addEventListener('click',f); tr.addEventListener('keydown',e=>{if(e.key==='Enter')f();});});
+}
+
+/* ---------------- REGISTER ---------------- */
+let regSort = {k:'lpoD',dir:-1}, regPage = 0; const PAGE = 25;
+const REG_COLS = [
+  {k:'so',l:'SO #'},{k:'ds',l:'Job'},{k:'cl',l:'Client'},{k:'grp',l:'Line'},{k:'st',l:'Status'},{k:'pct',l:'Progress'},{k:'val',l:'PO value',r:1},{k:'lpoD',l:'LPO date'},{k:'pfD',l:'Planned finish'},{k:'pe',l:'Engineer'},{k:'inv',l:'Invoice no.'}];
+function vRegister(){
+  const ps = fP();
+  const s = [...ps].sort((a,b)=>{ let x=a[regSort.k], y=b[regSort.k]; if(x instanceof Date||y instanceof Date){x=x?+x:-Infinity;y=y?+y:-Infinity;} if(x==null)x=-Infinity; if(y==null)y=-Infinity; return (x>y?1:x<y?-1:0)*regSort.dir; });
+  const pages = Math.max(1,Math.ceil(s.length/PAGE)); regPage = Math.min(regPage,pages-1);
+  const rows = s.slice(regPage*PAGE,(regPage+1)*PAGE);
+  $('#view').innerHTML = `<div class="view">
+   <section class="panel"><div class="panel-head"><div><h3>${s.length} job lines</h3><div class="q">${aed(sum(s,p=>p.v))} total PO value. Sort by any column; select a row to see its full lifecycle.</div></div></div>
+   ${s.length?`<div class="tbl-wrap"><table><thead><tr>${REG_COLS.map(c=>`<th class="${c.r?'r':''}" aria-sort="${regSort.k===c.k?(regSort.dir>0?'ascending':'descending'):'none'}"><button data-k="${c.k}">${c.l}</button></th>`).join('')}</tr></thead><tbody>
+   ${rows.map(p=>`<tr class="click" data-id="${p.id}" tabindex="0"><td style="white-space:nowrap">${esc(p.so||'—')}</td><td class="desc">${esc(p.ds)}</td><td>${esc(p.cl)}</td><td>${GROUP_LABEL[p.grp]||esc(p.grp)}</td><td>${pill(p.st)}</td><td>${progBar(p.pct)}</td><td class="r num" title="${full(p.val)}">${p.val!=null?short(p.val):'<span class="warnt">Pending</span>'}</td><td style="white-space:nowrap">${fmtDate(p.lpoD)}</td><td style="white-space:nowrap" class="${p.late?'down':''}">${fmtDate(p.pfD)}</td><td>${esc(titleCase(p.pe||'—'))}</td><td style="white-space:nowrap">${esc(p.invOk?p.inv:'—')}</td></tr>`).join('')}
+   </tbody></table></div>
+   <div class="pager"><span>Showing ${regPage*PAGE+1}–${Math.min(s.length,(regPage+1)*PAGE)} of ${s.length}</span><div class="btns"><button class="btn" id="pPrev" ${regPage===0?'disabled':''}>Previous</button><button class="btn" id="pNext" ${regPage>=pages-1?'disabled':''}>Next</button></div></div>`
+   : emptyState('No job lines match','Change the search or filters.')}
+   </section></div>`;
+  document.querySelectorAll('th button').forEach(b=>b.addEventListener('click',()=>{ const k=b.dataset.k; regSort = regSort.k===k?{k,dir:-regSort.dir}:{k,dir:(k==='val'||k==='lpoD'||k==='pfD'||k==='pct')?-1:1}; regPage=0; vRegister(); }));
+  if($('#pPrev')){ $('#pPrev').addEventListener('click',()=>{regPage--; vRegister();}); $('#pNext').addEventListener('click',()=>{regPage++; vRegister();}); }
+  bindRows();
+  exportRows = () => regExport(s, 'mge-project-register.csv');
+}
+function regExport(list, name){
+  return {name, head:['Row','Year','SO','Description','Business line','Principal','Client','Job card','Status','Progress','LPO date','Customer order','PO value','Planned start','Planned finish','Actual start','Actual finish','Days past planned finish','Project engineer','Service engineer','Final report','WCC ref','WCC submitted','WCC approved','Service entry date','Service entry no.','Invoice no.','Week 41 note'],
+    rows:list.map(p=>[p.id,p.yr,p.so,p.ds,p.grp,p.co,p.cl,p.jc,p.st,p.pct,p.lpo,p.cpo,p.val??'',p.ps,p.pf,p.as,p.af,p.daysLate||'',p.pe,p.se,p.rep,p.wr,p.ws,p.wa,p.sed,p.sen,p.inv,p.note])};
+}
+
+/* ---------------- DATA QUALITY ---------------- */
+function vQuality(){
+  const g = groupBy(RAW.dq, x=>x[0]);
+  const fix = {
+    'Invoiced without invoice number':'Add the Zoho invoice number to every Invoiced line so billing can be audited and reconciled.',
+    'Invoice amount ≠ PO value (invoice plan)':'Check the INVOICE AMOUNT formula in KHAN. On several lines the amount does not equal the PO value, which usually means the formula adds planned and actual together or the row points at the wrong PO.',
+    'PO value missing':'Enter the PO value once the client issues the PO; until then these jobs cannot be planned for billing.',
+    'Job card still OPEN after invoicing':'Close the job card in the system once invoiced.',
+    'PO value formatted as date':'These cells were formatted as dates in Excel. The dashboard recovered the numbers; change the cell format to number.',
+    'Stray text in a date column':'Remove the stray text from the date column.',
+    'Invoice-plan line not found in the register':'Add the Zoho SO number (or customer PO) so the invoice line can be linked to its job and its progress.',
+    'Unknown project status':'Use one of: Open PO, In progress, Work completed, Invoiced, Cancelled.',
+    'Year missing':'Fill in the YEAR column.',
+    'Project %':'Progress above 100% was entered; convert.py divides it by 100.'};
+  $('#view').innerHTML = `<div class="view grid g-12">
+   ${panel('span-12','Why this page exists','A dashboard is only as good as the tracker behind it. These items were found while building it. Fixing them takes the team about a day and makes every number above audit-ready.',
+     `<div class="mini-stats"><div class="r"><span class="num">${RAW.dq.length}</span><span>Issues found</span></div><div class="b"><span class="num">${P.length}</span><span>Job lines in ${esc(RAW.sheets?RAW.sheets.projects:'register')}</span></div><div class="b"><span class="num">${V.length}</span><span>Invoice-plan lines in ${esc(RAW.sheets?RAW.sheets.invoices:'plan')}</span></div><div class="a"><span class="num">${V.filter(v=>!v.proj).length}</span><span>Invoice lines with no matching SO in the register</span></div></div>
+      <div class="take"><b>Structural observations (from the October 2026 tracker):</b> (1) Actual start equals planned start on almost every row, and planned finish matches actual finish on most completed jobs, so the original baseline appears to be overwritten; keep a separate baseline column to measure slippage honestly. (2) The KHAN sheet has no invoice date, due date or receipts, so receivables and DSO cannot be measured. (3) PO value is recorded per job line; several lines share one customer PO, which is correct but means PO-level totals need the line split kept intact.</div>`)}
+   <div class="span-12">${Object.entries(g).sort((a,b)=>b[1].length-a[1].length).map(([k,a])=>`<details class="dq-grp"><summary><span class="dot ${a.length>10?'r':'a'}" style="width:22px;height:22px;border-radius:6px;display:grid;place-items:center;font-size:12px">!</span>${esc(k)}<span class="n">${a.length}</span></summary><p style="margin:0 16px 10px 36px;font-size:13px">${esc(fix[k]||'')}</p><ul>${a.map(x=>`<li>${esc(x[1])}</li>`).join('')}</ul></details>`).join('')}</div>
+  </div>`;
+}
+
+/* ============================================================
+   DRAWER
+   ============================================================ */
+let lastFocus = null;
+function openDrawer(p){
+  if(!p) return; lastFocus = document.activeElement;
+  $('#dSub').textContent = `${p.so||'No SO'}${p.cpo?' · PO '+p.cpo:''}`;
+  $('#dTitle').textContent = p.ds;
+  const step = (l,s,ok,kind) => `<li><span class="s ${kind==='plan'?(ok?'plan':''):ok?'ok':(kind==='due'?'miss':'')}"></span><span>${l}${kind==='due'?' <small class="warnt">overdue</small>':''}</span><em>${s||'—'}</em></li>`;
+  const dtxt = s => isD(s)?fmtDate(pd(s)):(s&&s!=='-'?esc(s):'');
+  const inv = V.filter(v=>v.proj===p);
+  $('#dBody').innerHTML = `
+   <div class="facts">
+    <div><span>Client</span><b>${esc(p.cl)}</b></div><div><span>Status</span><b>${pill(p.st)}</b></div>
+    <div><span>PO value</span><b class="num">${full(p.val)}</b></div><div><span>Progress</span><b>${progBar(p.pct)}</b></div>
+    <div><span>Business line / principal</span><b>${GROUP_LABEL[p.grp]||esc(p.grp)} / ${esc(p.co)}</b></div><div><span>Tracker year</span><b>${p.yr||'—'}</b></div>
+    <div><span>Project engineer</span><b>${esc(titleCase(p.pe||'—'))}</b></div><div><span>Service engineer</span><b>${esc(titleCase(p.se||'—'))}</b></div>
+   </div>
+   ${p.late?`<div class="note" style="background:var(--brand-soft)"><b style="color:var(--brand-ink)">Past planned finish</b>${p.daysLate} days over the planned finish of ${fmtDate(p.pfD)}.</div>`:''}
+   <h4 style="font-size:14px;margin:4px 0 8px">Lifecycle <small style="font-weight:400;color:var(--muted);font-family:var(--body);font-size:12px">solid = done, dashed = planned</small></h4>
+   <ul class="steps">
+    ${step('LPO received',fmtDate(p.lpoD),!!p.lpoD)}
+    ${step('Planned start',fmtDate(p.psD),!!p.psD,'plan')}
+    ${step('Actual start',fmtDate(p.asD),!!p.asD)}
+    ${step('Planned finish',fmtDate(p.pfD),!!p.pfD,'plan')}
+    ${step('Actual finish',fmtDate(p.afD),!!p.afD,(!p.afD&&p.late)?'due':'')}
+    ${step('Final report',dtxt(p.rep)||null,p.repOk)}
+    ${step('WCC submitted',dtxt(p.ws)||null,p.wsOk)}
+    ${step('WCC approved',dtxt(p.wa)||null,p.waOk)}
+    ${step('Service entry',(dtxt(p.sed)||'')+(p.sen&&p.sen!=='-'?' · '+esc(p.sen):'')||null,p.seOk)}
+    ${step('Invoice',p.invOk?esc(p.inv)+(p.ia&&p.ia!=='-'?' · '+esc(p.ia):''):null,p.invOk)}
+   </ul>
+   ${p.note?`<div class="note"><b>${WEEK.cur} update</b>${esc(p.note)}</div>`:''}
+   ${p.note40&&p.note40!==p.note?`<div class="note"><b>${WEEK.prev} update</b>${esc(p.note40)}</div>`:''}
+   ${inv.length?`<h4 style="font-size:14px;margin:16px 0 8px">In the invoice plan</h4>${inv.map(v=>`<div class="facts"><div><span>Invoice amount</span><b class="num">${full(v.amt)}</b></div><div><span>Raised</span><b class="num">${full(v.raised)}</b></div><div><span>Balance</span><b class="num">${full(v.bal)}</b></div><div><span>Planned month</span><b>${fmtDate(v.imD)}</b></div><div><span>Confidence</span><b><span class="pill ${CONF_CLS[v.conf]}">${CONF_LABEL[v.conf]}</span></b></div><div><span>Payment</span><b>${esc(v.pay||'Not recorded')}</b></div></div>`).join('')}`:''}
+   <p style="font-size:12px;color:var(--muted)">Source: ${esc(RAW.sheets?RAW.sheets.projects:'register')} sheet, row ${p.id}.</p>`;
+  $('#drawer').classList.add('open'); $('#scrim').classList.add('open'); $('#drawer').setAttribute('aria-hidden','false');
+  setTimeout(()=>$('#dClose').focus(),50);
+}
+function closeDrawer(){ $('#drawer').classList.remove('open'); $('#scrim').classList.remove('open'); $('#drawer').setAttribute('aria-hidden','true'); if(lastFocus) lastFocus.focus(); }
+$('#dClose').addEventListener('click',closeDrawer); $('#scrim').addEventListener('click',closeDrawer);
+document.addEventListener('keydown',e=>{ if(e.key==='Escape' && $('#drawer').classList.contains('open')) closeDrawer(); });
+
+/* ============================================================
+   THEME, TOAST, EXPORT
+   ============================================================ */
+function toast(m){ const t=$('#toast'); t.textContent=m; t.classList.add('show'); clearTimeout(toast._t); toast._t=setTimeout(()=>t.classList.remove('show'),2200); }
+function isDark(){ const a=document.documentElement.getAttribute('data-theme'); return a ? a==='dark' : matchMedia('(prefers-color-scheme: dark)').matches; }
+function syncThemeBtn(){ $('#themeBtn span').textContent = isDark() ? 'Light' : 'Dark'; }
+try{ const t=localStorage.getItem('mge-theme'); if(t) document.documentElement.setAttribute('data-theme',t); }catch(e){}
+function syncLook(){ document.documentElement.setAttribute('data-look', LOOK); $('#lookBtn').setAttribute('aria-pressed', is3D()); $('#lookBtn span').textContent = is3D() ? '3D charts' : 'Flat charts'; }
+syncLook();
+$('#lookBtn').addEventListener('click',()=>{ LOOK = is3D() ? 'flat' : '3d'; try{localStorage.setItem('mge-look',LOOK);}catch(e){} syncLook(); if(P) render(); });
+$('#themeBtn').addEventListener('click',()=>{ const n=isDark()?'light':'dark'; document.documentElement.setAttribute('data-theme',n); try{localStorage.setItem('mge-theme',n);}catch(e){} syncThemeBtn(); chartDefaults(); render(); });
+let downloads = null, exportRows = null;
+const csvCell = v => { if(v==null) return ''; const s=String(v); return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s; };
+$('#exportBtn').addEventListener('click', async ()=>{
+  if(!exportRows) return; const {name,head,rows} = exportRows();
+  const csv = '\ufeff'+[head,...rows].map(r=>r.map(csvCell).join(',')).join('\n');
+  if(downloads){ // running inside a claude.ai artifact
+    try{ await downloads.save({filename:name,data:csv}); toast(`Saved ${name} (${rows.length} rows, current filters)`); }
+    catch(e){ if(e&&e.code==='declined') return; toast(e&&e.code==='rate_limited'?'A save prompt is already open.':'Export is not available in this view.'); }
+    return;
+  }
+  // standalone browser: plain file download
+  const url = URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+  const a = document.createElement('a'); a.href=url; a.download=name; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),2000); toast(`Downloaded ${name} (${rows.length} rows, current filters)`);
+});
+(async()=>{ try{ if(window.claude&&window.claude.use){ downloads = await window.claude.use('downloads'); } }catch(e){} })();
+
+/* ============================================================
+   BOOT
+   ============================================================ */
+function start(raw){
+  try{ initData(raw); }
+  catch(e){ showLoader('data.json was read but could not be used: '+e.message); return; }
+  $('#sideFoot').innerHTML = `<strong>Data as of ${fmtDate(TODAY)}</strong><br>Source: ${esc(RAW.source||'tracker workbook')}${RAW.sheets?`, sheets ${esc(RAW.sheets.projects)} (project register) and ${esc(RAW.sheets.invoices)} (invoice plan)`:''}. All values in AED.${RAW.generated?`<br>Converted ${esc(RAW.generated.replace('T',' '))}`:''}`;
+  chartDefaults(); syncThemeBtn(); buildNav(); buildFilters(); renderChips(); render();
+}
+function showLoader(msg){
+  $('#title').textContent = 'Load the tracker data';
+  $('#view').innerHTML = `<section class="panel" style="max-width:640px">
+    <h3>The dashboard needs data.json</h3>
+    <p class="q" style="margin:8px 0 14px">${esc(msg)}</p>
+    <p style="margin:0 0 14px;font-size:13.5px">Browsers block pages opened straight from disk from reading other files. Either serve the folder (run <code>python -m http.server 8000</code> in it, then open <code>http://localhost:8000</code>) or choose the file below.</p>
+    <label class="btn primary" style="width:max-content;cursor:pointer">Choose data.json<input type="file" id="pick" accept=".json,application/json" style="display:none"></label>
+  </section>`;
+  $('#pick').addEventListener('change', e => { const f=e.target.files[0]; if(!f) return; const rd=new FileReader();
+    rd.onload = () => { try{ start(JSON.parse(rd.result)); }catch(err){ showLoader('That file is not valid JSON: '+err.message); } }; rd.readAsText(f); });
+}
+(async function boot(){
+  if(window.MGE_DATA){ start(window.MGE_DATA); return; }            // optional: data embedded via <script src="data.js">
+  try{
+    const r = await fetch('data.json', {cache:'no-store'});
+    if(!r.ok) throw new Error('data.json returned HTTP '+r.status+'.');
+    start(await r.json());
+  }catch(e){ showLoader(e.message.includes('HTTP') ? e.message : 'data.json could not be read from this location.'); }
+})();
+</script>
+</body>
+</html>
